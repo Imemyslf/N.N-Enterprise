@@ -38,48 +38,7 @@ const materials = [
   },
 ];
 
-const billings = [
-  {
-    companyName: "abc",
-    GSTNos: "123456789",
-    email: "abc@gmail.com",
-    stateCode: 30,
-    companyMaterials: [
-      {
-        name: "metal",
-        rate: 30,
-        kg: 0,
-      },
-      {
-        name: "cardboard",
-        rate: 20,
-        kg: 0,
-      },
-    ],
-    date: "15/09/2024 ",
-    timing: "07:08:54 PM",
-  },
-  {
-    companyName: "xyz",
-    GSTNos: "135791113",
-    email: "xyz@gmail.com",
-    stateCode: 30,
-    companyMaterials: [
-      {
-        name: "metal",
-        rate: 30,
-        kg: 0,
-      },
-      {
-        name: "plastic",
-        rate: 20,
-        kg: 0,
-      },
-    ],
-    date: "15/09/2024 ",
-    timing: "08:08:54 PM",
-  },
-];
+const billings = [];
 
 app.get(`/api/company`, (req, res) => {
   if (company.length > 0) {
@@ -101,7 +60,7 @@ app.get(`/api/company/:companyName`, (req, res) => {
     console.log(response);
     res.send(response);
   } else {
-    res.sendStatus(404);
+    res.status(404).send(`Company ${companyName} is not found`);
   }
 });
 
@@ -142,7 +101,7 @@ app.get(`/api/materials/:materialName`, (req, res) => {
     console.log(response);
     res.send(response);
   } else {
-    res.sendStatus(404);
+    res.status(404).send(`Material ${materialName} is not found`);
   }
 });
 
@@ -175,66 +134,86 @@ app.get(`/api/billings`, (req, res) => {
 app.get(`/api/billings/:companyName`, (req, res) => {
   const { companyName } = req.params;
 
-  const response = billings.find(
+  const response = billings.filter(
     (cName) => cName.companyName.toLowerCase() === companyName.toLowerCase()
   );
 
-  if (response) {
+  if (response.length > 0) {
     console.log(response);
-    res.send(response);
+    res.json(response);
   } else {
-    res.sendStatus(404);
+    res.status(404).send(`Company ${companyName} is not found`);
+  }
+});
+
+app.get(`/api/billings/invoice/:invoiceNos`, (req, res) => {
+  let { invoiceNos } = req.params;
+  invoiceNos = parseInt(invoiceNos, 10);
+  console.log(`invoiceNos;- ${invoiceNos}`);
+
+  if (isNaN(invoiceNos)) {
+    return res.status(400).send("Invalid invoice number");
+  }
+
+  const response = billings.filter(
+    (cInvoice) => cInvoice.invoiceNos === invoiceNos
+  );
+
+  if (response.length > 0) {
+    console.log(response);
+    res.json(response);
+  } else {
+    res.status(404).send(`Invoice nos ${invoiceNos} not found`);
   }
 });
 
 app.post(`/api/billings`, (req, res) => {
   const { companyName, companyMaterials } = req.body;
 
-  const billing = billings.find(
-    (c) => c.companyName.toLowerCase() === companyName.toLowerCase()
+  const companyInfo = company.find(
+    (c) => c.name.toLowerCase() === companyName.toLowerCase()
   );
 
-  if (billing) {
-    res.status(400).send(`Company bills already exists!!`);
-  } else {
-    const companyInfo = company.find(
-      (c) => c.name.toLowerCase() === companyName.toLowerCase()
-    );
-    if (!companyInfo) {
-      res.status(400).send("Company does not exist");
-      return;
-    }
-    const { GSTNos, email, stateCode } = companyInfo;
-    console.log(companyName, GSTNos, email, stateCode, materials);
-    const updatedMaterials = [];
-
-    for (let i = 0; i < companyMaterials.length; i++) {
-      const materialName = companyMaterials[i];
-      const material = materials.find(
-        (m) => m.name.toLowerCase() === materialName.toLowerCase()
-      );
-
-      if (!material) {
-        res.status(400).send(`Material ${materialName} does not exist`);
-        return;
-      }
-      updatedMaterials.push(material);
-    }
-
-    const date = new Date().toLocaleDateString();
-    const time = new Date().toLocaleTimeString();
-    const newBill = {
-      companyName,
-      GSTNos,
-      email,
-      stateCode,
-      companyMaterials: updatedMaterials,
-      date,
-      time,
-    };
-    billings.push(newBill);
-    res.status(201).send(newBill);
+  if (!companyInfo) {
+    return res.status(400).send("Company does not exist");
   }
+
+  const { GSTNos, email, stateCode } = companyInfo;
+
+  // Validate and update materials
+  const updatedMaterials = [];
+  for (let i = 0; i < companyMaterials.length; i++) {
+    const { name, kg } = companyMaterials[i];
+    const material = materials.find(
+      (m) => m.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (!material) {
+      return res.status(400).send(`Material ${name} does not exist`);
+    }
+
+    updatedMaterials.push({ ...material, kg });
+  }
+
+  const lastBill = billings[billings.length - 1];
+  const newInvoiceNos = lastBill ? lastBill.invoiceNos + 1 : 240001;
+
+  // Create the new bill
+  const date = new Date().toLocaleDateString();
+  const time = new Date().toLocaleTimeString();
+  const newBill = {
+    companyName,
+    invoiceNos: newInvoiceNos,
+    GSTNos,
+    email,
+    stateCode,
+    companyMaterials: updatedMaterials,
+    date,
+    time,
+  };
+
+  billings.push(newBill);
+  res.status(201).send(newBill);
 });
 
 app.listen(port, () => {
