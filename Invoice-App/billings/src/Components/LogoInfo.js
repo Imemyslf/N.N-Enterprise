@@ -7,7 +7,7 @@ function LogoInfo() {
         <>
         <div className="logoinfo">
           <div className="information">
-            <div className="logo">
+            <div className="logo-container">
               <img src={Om_logo} alt="Om_logo" />
             </div>
             <h1>N.N ENTERPRISES</h1>

@@ -5,7 +5,7 @@ function DataInput(){
     return (
         <>
         <div className="data-input" >
-            <div className = "input">
+            <div className = "custom-input">
                 <div className='lab'>
                     <label htmlFor="">M/s</label>
                 </div>

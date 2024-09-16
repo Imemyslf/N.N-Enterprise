@@ -8,7 +8,7 @@ const Billing = () =>{
 
     return(
         <>
-            <div className='container'>
+            <div className='bill-container'>
                 <LogoInfo />
                 <DataInput />
                 <Main/>
