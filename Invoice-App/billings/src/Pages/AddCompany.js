@@ -43,7 +43,7 @@ const Company = () => {
           </Form.Group>
         </Row>
         <Row className="mb-4">
-          <Form.Group as={Col} controlId="formGridCompanyEmail">
+          <Form.Group as={Col} md="6" controlId="formGridCompanyEmail">
             <Form.Label>Company email</Form.Label>
             <Form.Control type="email" placeholder="Maysurtraders-goa@gmail.com" change={(e) => setCompanyEmail(e.target.value)} required />
           </Form.Group>
