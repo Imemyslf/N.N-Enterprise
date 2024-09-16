@@ -1,46 +1,14 @@
 import express from "express";
+import { db, connectToDb } from "./database.js";
 
 const app = express();
 const port = 8000;
 
 app.use(express.json());
 
-const company = [
-  {
-    name: "abc",
-    GSTNos: "123456789",
-    email: "abc@gmail.com",
-    stateCode: 30,
-  },
-  {
-    name: "xyz",
-    GSTNos: "135791113",
-    email: "xyz@gmail.com",
-    stateCode: 30,
-  },
-];
-
-const materials = [
-  {
-    name: "metal",
-    rate: 30,
-    kg: 0,
-  },
-  {
-    name: "cardboard",
-    rate: 20,
-    kg: 0,
-  },
-  {
-    name: "plastic",
-    rate: 20,
-    kg: 0,
-  },
-];
-
-const billings = [];
-
-app.get(`/api/company`, (req, res) => {
+//Company List Name(GET)
+app.get(`/api/company`, async (req, res) => {
+  const company = await db.collection("company").find().toArray();
   if (company.length > 0) {
     console.log(company);
     res.send(company);
@@ -49,21 +17,22 @@ app.get(`/api/company`, (req, res) => {
   }
 });
 
-app.get(`/api/company/:companyName`, (req, res) => {
-  const { companyName } = req.params;
+//Specific Company Name Search(GET)
+app.get(`/api/company/:name`, async (req, res) => {
+  let { name } = req.params;
+  name = name.toLowerCase();
 
-  const response = company.find(
-    (cName) => cName.name.toLowerCase() === companyName.toLowerCase()
-  );
-
+  const response = await db.collection("company").findOne({ name });
+  console.log(`Company data found: ${JSON.stringify(response)}`);
   if (response) {
     console.log(response);
-    res.send(response);
+    res.json(response);
   } else {
-    res.status(404).send(`Company ${companyName} is not found`);
+    res.status(404).send(`Company ${name} is not found`);
   }
 });
 
+//Insertion of Company(POST)
 app.post(`/api/company`, (req, res) => {
   const { name, GSTNos, email, stateCode } = req.body;
   console.log(name, GSTNos, email, stateCode);
@@ -81,7 +50,9 @@ app.post(`/api/company`, (req, res) => {
   }
 });
 
-app.get(`/api/materials`, (req, res) => {
+//Material List Name(GET)
+app.get(`/api/materials`, async (req, res) => {
+  const materials = await db.collection("materials").find().toArray();
   if (materials.length > 0) {
     console.log(materials);
     res.send(materials);
@@ -90,21 +61,24 @@ app.get(`/api/materials`, (req, res) => {
   }
 });
 
-app.get(`/api/materials/:materialName`, (req, res) => {
-  const { materialName } = req.params;
+//Material Company Name Search(GET)
+app.get(`/api/materials/:name`, async (req, res) => {
+  let { name } = req.params;
+  console.log(name);
+  name = name.toLowerCase();
 
-  const response = materials.find(
-    (mName) => mName.name.toLowerCase() === materialName.toLowerCase()
-  );
+  const response = await db.collection("materials").findOne({ name });
+  console.log(`Materials data found: ${JSON.stringify(response)}`);
 
   if (response) {
     console.log(response);
     res.send(response);
   } else {
-    res.status(404).send(`Material ${materialName} is not found`);
+    res.status(404).send(`Material ${name} is not found`);
   }
 });
 
+//Insertion of Material(POST)
 app.post(`/api/materials`, (req, res) => {
   const { name, rate, kg } = req.body;
   console.log(name, rate, kg);
@@ -122,7 +96,9 @@ app.post(`/api/materials`, (req, res) => {
   }
 });
 
-app.get(`/api/billings`, (req, res) => {
+//Billing List Name(GET)
+app.get(`/api/billings`, async (req, res) => {
+  const billings = await db.collection("billings").find().toArray();
   if (billings.length > 0) {
     console.log(billings);
     res.send(billings);
@@ -131,22 +107,24 @@ app.get(`/api/billings`, (req, res) => {
   }
 });
 
-app.get(`/api/billings/:companyName`, (req, res) => {
-  const { companyName } = req.params;
+//Specific Comapny Billing Search(GET)
+app.get(`/api/billings/company/:name`, async (req, res) => {
+  const { name } = req.params;
 
-  const response = billings.filter(
-    (cName) => cName.companyName.toLowerCase() === companyName.toLowerCase()
-  );
+  const response = await db
+    .collection("billings")
+    .findOne({ companyName: name });
 
-  if (response.length > 0) {
+  if (response) {
     console.log(response);
     res.json(response);
   } else {
-    res.status(404).send(`Company ${companyName} is not found`);
+    res.status(404).send(`Company ${name} is not found`);
   }
 });
 
-app.get(`/api/billings/invoice/:invoiceNos`, (req, res) => {
+//Specific Invoice Billing Search(GET)
+app.get(`/api/billings/invoice/:invoiceNos`, async (req, res) => {
   let { invoiceNos } = req.params;
   invoiceNos = parseInt(invoiceNos, 10);
   console.log(`invoiceNos;- ${invoiceNos}`);
@@ -155,11 +133,9 @@ app.get(`/api/billings/invoice/:invoiceNos`, (req, res) => {
     return res.status(400).send("Invalid invoice number");
   }
 
-  const response = billings.filter(
-    (cInvoice) => cInvoice.invoiceNos === invoiceNos
-  );
+  const response = await db.collection("billings").findOne({ invoiceNos });
 
-  if (response.length > 0) {
+  if (response) {
     console.log(response);
     res.json(response);
   } else {
@@ -167,6 +143,7 @@ app.get(`/api/billings/invoice/:invoiceNos`, (req, res) => {
   }
 });
 
+//Insertion Billings For The Companies(POST)
 app.post(`/api/billings`, (req, res) => {
   const { companyName, companyMaterials } = req.body;
 
@@ -180,7 +157,6 @@ app.post(`/api/billings`, (req, res) => {
 
   const { GSTNos, email, stateCode } = companyInfo;
 
-  // Validate and update materials
   const updatedMaterials = [];
   for (let i = 0; i < companyMaterials.length; i++) {
     const { name, kg } = companyMaterials[i];
@@ -198,7 +174,6 @@ app.post(`/api/billings`, (req, res) => {
   const lastBill = billings[billings.length - 1];
   const newInvoiceNos = lastBill ? lastBill.invoiceNos + 1 : 240001;
 
-  // Create the new bill
   const date = new Date().toLocaleDateString();
   const time = new Date().toLocaleTimeString();
   const newBill = {
@@ -216,6 +191,10 @@ app.post(`/api/billings`, (req, res) => {
   res.status(201).send(newBill);
 });
 
-app.listen(port, () => {
-  console.log(`listening on port ${port}`);
+//Checking db connect and server connection.
+connectToDb(() => {
+  console.log("Successfully connected to Database");
+  app.listen(port, () => {
+    console.log(`listening on port ${port}`);
+  });
 });
