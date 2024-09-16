@@ -53,7 +53,7 @@ app.post(`/api/company`, async (req, res) => {
     if (result.acknowledged) {
       console.log(result.acknowledged);
       console.log(`Successfully added`);
-      res.status(201).send(newComp);
+      res.status(200).send(newComp);
     } else {
       res.status(500).send("Failed to insert the company");
     }

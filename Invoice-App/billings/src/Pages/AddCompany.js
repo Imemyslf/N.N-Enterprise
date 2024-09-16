@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { Input } from "../Components/Input";
-import { Label } from "../Components/Label";
 import axios from "axios";
 import { Button, Form, Row, Col } from "react-bootstrap";
 import "../styles/Company.css";
@@ -10,18 +8,7 @@ const Company = () => {
   const [companyGST, setCompanyGST] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
   const [companyStateCode, setCompanyStateCode] = useState("");
-  const [name, setName] = useState({});
   const [validated, setValidated] = useState(false); // validation useState. . .
-
-  useEffect(() => {
-    const companyInfo = async () => {
-      const response = await axios.get(`http://localhost:8000/api/company/`);
-      const data = response.data;
-      console.log(data);
-    };
-
-    companyInfo();
-  }, []);
 
   /* Validation source */
   //   const handleSubmit = (event) => {
@@ -33,9 +20,26 @@ const Company = () => {
   //     setValidated(true);
   //   };
 
-  const handleSubmitt = () => {
-    const inputs = [companyName, companyEmail, companyGST, companyStateCode];
-    console.log(inputs);
+  const handleSubmitt = async () => {
+    try {
+      const inputs = {
+        name: companyName,
+        GSTNos: companyGST,
+        email: companyEmail,
+        stateCode: companyStateCode,
+      };
+      const response = await axios.post(
+        `http://localhost:8000/api/company`,
+        inputs
+      );
+
+      if (response.status === 200) {
+        console.log(`Company Added Succesfully`);
+        alert(`Company Added Succesfully`);
+      }
+    } catch (err) {
+      console.error("Error submitting data:", err);
+    }
   };
 
   return (
@@ -54,7 +58,7 @@ const Company = () => {
               <Col sm="10">
                 <Form.Control
                   type="text"
-                  //   value={companyName}
+                  value={companyName}
                   placeholder="Eg:- N.N Enterprises"
                   onChange={(e) => setCompanyName(e.target.value)}
                   required
