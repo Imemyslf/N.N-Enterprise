@@ -33,20 +33,27 @@ app.get(`/api/company/:name`, async (req, res) => {
 });
 
 //Insertion of Company(POST)
-app.post(`/api/company`, (req, res) => {
+app.post(`/api/company`, async (req, res) => {
   const { name, GSTNos, email, stateCode } = req.body;
   console.log(name, GSTNos, email, stateCode);
 
-  const comp = company.filter(
-    (c) => c.name.toLowerCase() === name.toLowerCase()
-  );
+  const response = await db
+    .collection("company")
+    .findOne({ name: new RegExp(`^${name}`, "i") });
 
-  if (comp.length > 0) {
+  if (response) {
     res.status(400).send(`Company already exists!!`);
   } else {
     const newComp = { name, GSTNos, email, stateCode };
-    company.push(newComp);
-    res.status(201).send(newComp);
+    const result = await db.collection("company").insertOne(newComp);
+
+    if (result.acknowledged) {
+      console.log(result.acknowledged);
+      console.log(`Successfully added`);
+      res.status(201).send(newComp);
+    } else {
+      res.status(500).send("Failed to insert the company");
+    }
   }
 });
 
@@ -79,20 +86,26 @@ app.get(`/api/materials/:name`, async (req, res) => {
 });
 
 //Insertion of Material(POST)
-app.post(`/api/materials`, (req, res) => {
+app.post(`/api/materials`, async (req, res) => {
   const { name, rate, kg } = req.body;
   console.log(name, rate, kg);
 
-  const mate = materials.filter(
-    (m) => m.name.toLowerCase() === name.toLowerCase()
-  );
+  const response = await db
+    .collection("materials")
+    .findOne({ name: new RegExp(`^${name}$`, "i") });
 
-  if (mate.length > 0) {
+  if (response) {
     res.status(400).send(`Material already exists!!`);
   } else {
     const newMate = { name, rate, kg };
-    materials.push(newMate);
-    res.status(201).send(newMate);
+    const result = await db.collection("materials").insertOne(newMate);
+
+    if (result.acknowledged) {
+      console.log("Material Added successfully");
+      res.status(201).send(newMate);
+    } else {
+      res.status(500).send(`Failed to insert the materials`);
+    }
   }
 });
 
