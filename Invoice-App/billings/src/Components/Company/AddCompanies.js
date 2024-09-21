@@ -10,14 +10,14 @@ export const AddCompanies = () => {
   const [validated, setValidated] = useState(false); // validation useState. . .
 
   /* Validation source */
-  //   const handleSubmit = (event) => {
-  //     const form = event.currentTarget;
-  //     if (form.checkValidity() === false) {
-  //       event.preventDefault();
-  //       event.stopPropagation();
-  //     }
-  //     setValidated(true);
-  //   };
+    // const handleSubmit = (event) => {
+    //   const form = event.currentTarget;
+    //   if (form.checkValidity() === false) {
+    //     event.preventDefault();
+    //     event.stopPropagation();
+    //   }
+    //   setValidated(true);
+    // };
 
   const handleSubmitt = async () => {
     try {

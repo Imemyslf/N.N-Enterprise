@@ -1,101 +1,101 @@
 * {
-  margin: 0 !important;
-  padding: 0 !important;
-  box-sizing: border-box !important;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 textarea {
-  resize: none !important;
+  resize: none;
   /* border-radius:5px; */
   outline: none;
-  padding: 0.3em !important;
+  padding: 0.3em;
   outline: none;
-  border: none !important;
-  border-bottom: 2px solid black !important;
+  border: none;
+  border-bottom: 2px solid black;
 }
 
 .bill-container {
-  width: 50% !important;
-  height: auto !important;
-  margin-top: 1% !important;
-  margin-left: 25% !important;
-  padding: 20px !important;
+  width: 60%;
+  height: auto;
+  margin-top: 1%;
+  margin-left: 20%;
+  padding: 20px;
   /* border:2px solid black; */
 }
 
 .logoinfo {
   /* display: flex;
   justify-content: center; */
-  text-align: center !important;
-  border: 2px solid black !important;
-  padding: 0.3em !important;
+  text-align: center;
+  border: 2px solid black;
+  padding: 0.3em;
 
   & .blackback {
-    background: #000 !important ;
-    color: white !important;
-    width: 10em !important;
-    margin-left: 20em !important;
+    background: #000;
+    color: white;
+    width: 10em;
+    margin-left: 21em;
   }
 }
 
 .logo > img {
-  width: 2rem !important;
-  height: 2rem !important;
+  width: 2rem;
+  height: 2rem;
   object-fit: contain;
   /* border:5px solid black; */
 }
 
 .data-input {
-  display: grid !important;
-  height: auto !important;
-  grid-template-columns: 4fr 6fr !important;
-  border: 2px solid black !important;
-  border-style: none solid solid solid !important;
+  display: grid;
+  height: auto;
+  grid-template-columns: 4fr 6fr;
+  border: 2px solid black;
+  border-style: none solid solid solid;
 }
 
 .input {
-  display: grid !important;
-  grid-template-columns: 1fr 4fr !important;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
   border-right: 3px solid black;
 
   & .lab {
     /* border:2px solid green; */
-    margin: 0.3em !important;
-    padding: 0.3em !important;
-    text-align: center !important;
+    margin: 0.3em;
+    padding: 0.3em;
+    text-align: center;
   }
   & .ta {
     /* border:2px solid brown; */
-    margin: 0.3em 0.3em 0.3em 0em !important;
-    padding: 0.3em !important;
+    margin: 0.3em 0.3em 0.3em 0em;
+    padding: 0.3em;
   }
 }
 
 .extra-input {
-  display: flex !important;
+  display: flex;
   /* border: 5px solid yellow; */
 
   & .labels1 {
-    width: 8em !important;
+    width: 8em;
     /* border:2px solid orange; */
   }
 
   & .labels1,
   .labels2 > div {
     /* width: 5em; */
-    margin: 0.3em !important;
-    padding: 0.1em !important;
-    text-align: justify !important;
+    margin: 0.3em;
+    padding: 0.1em;
+    text-align: justify;
     /* border: 2px solid green; */
   }
 
   & .labels1 > div {
-    margin: 0.2em !important;
+    margin: 0.2em;
     /* border: 2px solid rgb(28, 45, 28); */
   }
 
   & .labels2 > div {
-    margin: 0.2em 0.2em 0.2em 0.5em !important;
+    margin: 0.2em 0.2em 0.2em 0.5em;
     /* border: 2px solid rgb(28, 45, 28); */
   }
 
@@ -105,60 +105,60 @@ textarea {
     margin-right: 0.2em;
 
     & > div > input {
-      outline: none !important;
-      border-style: none !important;
-      border-bottom: 2px solid black !important;
+      outline: none;
+      border-style: none;
+      border-bottom: 2px solid black;
     }
   }
 
   & .inputs1 > div {
-    margin: 0.1em !important;
+    margin: 0.1em;
   }
 
   & .inputs2 > div {
-    margin-top: 0.3em !important;
+    margin-top: 0.3em;
   }
 }
 
 .extrathing {
   border: 2px solid black;
-  border-style: none solid none solid !important;
+  border-style: none solid none solid;
 
   & .et1 {
     border-bottom: 2px solid black;
   }
 
   & .et1 > p {
-    margin-left: 2em !important;
+    margin-left: 2em;
   }
 
   & .et2 {
-    text-align: center !important;
+    text-align: center;
     border-bottom: 2px solid black;
   }
 }
 
 .catinfo {
-  display: grid !important;
-  grid-template-columns: 1fr 3fr 1fr 1fr 2fr 1fr 2fr !important;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr 1fr 2fr 1fr 2fr;
 
   & > div {
-    padding: 0.2em !important;
+    padding: 0.2em;
     border: 2px solid black;
     border-style: none solid solid none;
   }
 
   & > div:first-child {
-    border-style: none solid solid solid !important;
+    border-style: none solid solid solid;
   }
 }
 
 .catdata {
-  display: grid !important;
-  grid-template-columns: 1fr 3fr 1fr 1fr 2fr 1fr 2fr !important;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr 1fr 2fr 1fr 2fr;
 
   & > div {
-    padding: 0.2em !important;
+    padding: 0.2em;
     border: 2px solid black;
     border-style: none solid solid none;
   }
@@ -168,18 +168,18 @@ textarea {
   }
 
   & .metadata {
-    margin: 0.2em !important;
+    margin: 0.2em;
 
     & > input {
-      margin: 0.3em !important;
-      border: none !important;
+      margin: 0.3em;
+      border: none;
     }
   }
 }
 
 .gst {
-  display: grid !important;
-  grid-template-columns: 4fr 2fr 2fr 1fr 2fr !important;
+  display: grid;
+  grid-template-columns: 4fr 2fr 2fr 1fr 2fr;
 
   & > div {
     border: 2px solid black;
@@ -192,13 +192,15 @@ textarea {
     & > p {
       border: 2px solid black;
       border-style: none none solid none;
+      padding-left: 0.5rem;
     }
   }
 
   & .amtinfo > div {
     border: 2px solid black;
     border-style: none none solid none;
-    text-align: end !important;
+    text-align: end;
+    padding-right: 0.2rem;
   }
 
   & .amtinfo > div:last-child {
@@ -207,85 +209,85 @@ textarea {
 
   & .amtval > p {
     border: 2px solid black;
-    height: 1.55em !important;
+    height: 1.55em;
     border-style: none none solid none;
   }
 
   & .amtval > p:last-child {
-    border-style: none !important;
+    border-style: none;
   }
 }
 
 .amtbanksign {
-  display: grid !important;
-  grid-template-columns: 6fr 5fr !important;
+  display: grid;
+  grid-template-columns: 6fr 5fr;
   border: 2px solid black;
   border-style: none solid solid solid;
 
   & .amtbank {
     /* border: 2px solid red; */
-    display: grid !important;
-    grid-template-rows: 1fr 1fr !important;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
     /* border-style:none solid none none; */
 
     & .amt {
-      padding: 1em !important;
+      padding: 1em;
       border: 2px solid black;
       border-style: none solid solid none;
     }
 
     & .bank {
-      padding: 1em !important;
+      padding: 1em;
       border: 2px solid black;
       border-style: none solid none none;
     }
 
     & .bank > p {
-      margin: 0.2em !important;
+      margin: 0.2em;
     }
   }
 
   & .sign {
     /* border: 2px solid yellow; */
-    text-align: center !important;
-    margin-top: 10px !important;
+    text-align: center;
+    margin-top: 10px;
   }
 }
 
 .partyrec {
-  display: grid !important;
-  grid-template-columns: 6fr 5fr !important;
-  grid-template-rows: 2fr !important;
+  display: grid;
+  grid-template-columns: 6fr 5fr;
+  grid-template-rows: 2fr;
   /* border: 2px solid yellow; */
   border: 2px solid black;
   border-style: none solid none solid;
 
   & .party {
-    padding: 1em !important;
+    padding: 1em;
     border: 2px solid black;
     border-style: none solid solid none;
 
     & .spacebet {
-      display: flex !important;
+      display: flex;
       /* border: 2px solid blue; */
-      justify-content: space-between !important;
+      justify-content: space-between;
     }
 
     & .gstinput > input {
       border-style: none;
       outline: none;
-      margin-left: 1em !important;
+      margin-left: 1em;
     }
   }
 
   & .rec {
-    text-align: center !important;
-    margin-top: 0.5em !important;
+    text-align: center;
+    margin-top: 0.5em;
     border: 2px solid black;
     border-style: none none solid none;
     & .r2 {
-      height: 10px !important;
-      margin: 4em 6em 1em 6em !important;
+      height: 10px;
+      margin: 4em 6em 1em 6em;
       border: 2px solid black;
       border-style: none none solid none;
     }
@@ -296,6 +298,6 @@ textarea {
   border: 2px solid black;
   border-style: none solid solid solid;
   & > p {
-    margin-left: 1em !important;
+    margin-left: 1em;
   }
 }
