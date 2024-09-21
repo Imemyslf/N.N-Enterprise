@@ -18,7 +18,7 @@ app.get(`/api/company`, async (req, res) => {
   const company = await db.collection("company").find().toArray();
   if (company.length > 0) {
     console.log(company);
-    res.send(company);
+    res.json(company);
   } else {
     res.sendStatus(404);
   }
