@@ -1,20 +1,30 @@
-import "../assets/CSS/Billing.css";
-import LogoInfo from "../Components/LogoInfo";
-import DataInput from "../Components/DataInput";
-import Main from "../Components/MainBilling";
-import Bank from "../Components/Banksign";
+import "../styles/Billing.css";
+import { AddBill } from "../Components/Billing/AddBill";
+import { ShowBill } from "../Components/Billing/ShowBill";
+import { BillList } from "../Components/Billing/BillList";
 
-const Billing = () => {
+const BillingList = () => {
   return (
     <>
-      <div className="bill-container">
-        <LogoInfo />
-        <DataInput />
-        <Main />
-        <Bank />
-      </div>
+      <ShowBill />
     </>
   );
 };
 
-export default Billing;
+const AddBilling = () => {
+  return (
+    <>
+      <AddBill />
+    </>
+  );
+};
+
+const SearchBilling = () => {
+  return (
+    <>
+      <BillList />
+    </>
+  );
+};
+
+export { BillingList, AddBilling, SearchBilling };

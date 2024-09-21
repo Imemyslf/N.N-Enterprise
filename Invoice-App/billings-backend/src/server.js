@@ -7,7 +7,11 @@ const port = 8000;
 
 app.use(express.json());
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 //Company List Name(GET)
 app.get(`/api/company`, async (req, res) => {
@@ -21,9 +25,9 @@ app.get(`/api/company`, async (req, res) => {
 });
 
 //Specific Company Name Search(GET)
-app.get(`/api/company/:name`, async (req, res) => {
+app.get(`/api/company/search/:name`, async (req, res) => {
   let { name } = req.params;
-  name = name.toLowerCase();
+  name = name.trim();
 
   const response = await db.collection("company").findOne({ name });
   console.log(`Company data found: ${JSON.stringify(response)}`);
@@ -31,18 +35,21 @@ app.get(`/api/company/:name`, async (req, res) => {
     console.log(response);
     res.json(response);
   } else {
-    res.status(404).send(`Company ${name} is not found`);
+    res.status(404).send(`Company ${name} is not found or spelling error`);
   }
 });
 
 //Insertion of Company(POST)
-app.post(`/api/company`, async (req, res) => {
-  const { name, GSTNos, email, stateCode } = req.body;
+app.post(`/api/company/insert`, async (req, res) => {
+  let { name, GSTNos, email, stateCode } = req.body;
   console.log(name, GSTNos, email, stateCode);
 
-  const response = await db
-    .collection("company")
-    .findOne({ name: new RegExp(`^${name}`, "i") });
+  name = name.trim();
+  GSTNos = GSTNos.trim();
+  email = email.trim();
+  stateCode = parseInt(stateCode, 10);
+
+  const response = await db.collection("company").findOne({ name });
 
   if (response) {
     res.status(400).send(`Company already exists!!`);
@@ -60,6 +67,34 @@ app.post(`/api/company`, async (req, res) => {
   }
 });
 
+//deletion of speific company
+app.delete("/api/company/delete/:name", async (req, res) => {
+  const { name } = req.params;
+  try {
+    const result = await db.collection("company").deleteOne({ name });
+    if (result.deletedCount === 0) {
+      res.status(200).send({ message: "No documents to be deleted" });
+    }
+
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+app.delete("/api/company/detele", async (req, res) => {
+  try {
+    const result = await db.collection("company").deleteMany({});
+    if (result.deletedCount === 0) {
+      res.status(200).send({ message: "No documents to be deleted" });
+    }
+
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
 //Material List Name(GET)
 app.get(`/api/materials`, async (req, res) => {
   const materials = await db.collection("materials").find().toArray();
@@ -72,10 +107,10 @@ app.get(`/api/materials`, async (req, res) => {
 });
 
 //Material Company Name Search(GET)
-app.get(`/api/materials/:name`, async (req, res) => {
+app.get(`/api/materials/search/:name`, async (req, res) => {
   let { name } = req.params;
   console.log(name);
-  name = name.toLowerCase();
+  name = name.trim();
 
   const response = await db.collection("materials").findOne({ name });
   console.log(`Materials data found: ${JSON.stringify(response)}`);
@@ -89,18 +124,26 @@ app.get(`/api/materials/:name`, async (req, res) => {
 });
 
 //Insertion of Material(POST)
-app.post(`/api/materials`, async (req, res) => {
-  const { name, rate, kg } = req.body;
+app.post(`/api/materials/insert`, async (req, res) => {
+  let { name, rate, kg } = req.body;
   console.log(name, rate, kg);
 
-  const response = await db
-    .collection("materials")
-    .findOne({ name: new RegExp(`^${name}$`, "i") });
+  name = name.trim();
+  rate = parseInt(rate.trim(), 10);
+  kg = parseInt(kg.trim(), 10);
+
+  const response = await db.collection("materials").findOne({ name });
 
   if (response) {
     res.status(400).send(`Material already exists!!`);
   } else {
-    const newMate = { name, rate, kg };
+    let newName = "";
+    for (let i = 0; i < name.length; i++) {
+      i === 0 ? (newName += name[i].toUpperCase()) : (newName += name[i]);
+    }
+    console.log(newName);
+    const newMate = { name: newName, rate, kg };
+    console.log(newMate);
     const result = await db.collection("materials").insertOne(newMate);
 
     if (result.acknowledged) {
@@ -112,24 +155,53 @@ app.post(`/api/materials`, async (req, res) => {
   }
 });
 
+//deletion of materials
+app.delete("/api/materials/delete", async (req, res) => {
+  try {
+    const result = await db.collection("materials").deleteMany({});
+    if (result.deletedCount === 0) {
+      res.status(200).send({ message: "No documents to be deleted" });
+    }
+
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+//deletion of specific material
+app.delete("/api/materials/delete/:name", async (req, res) => {
+  const { name } = req.params;
+  try {
+    const result = await db.collection("materials").deleteOne({ name });
+    if (result.deletedCount === 0) {
+      res.status(200).send({ message: "No documents to be deleted" });
+    }
+
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
 //Billing List Name(GET)
 app.get(`/api/billings`, async (req, res) => {
   const billings = await db.collection("billings").find().toArray();
   if (billings.length > 0) {
     console.log(billings);
-    res.send(billings);
+    res.json(billings);
   } else {
     res.sendStatus(404);
   }
 });
 
 //Specific Comapny Billing Search(GET)
-app.get(`/api/billings/company/:name`, async (req, res) => {
-  const { name } = req.params;
+app.get(`/api/billings/company/:companyName`, async (req, res) => {
+  let { companyName } = req.params;
 
-  const response = await db
-    .collection("billings")
-    .findOne({ companyName: name });
+  companyName = companyName.trim();
+
+  const response = await db.collection("billings").findOne({ companyName });
 
   if (response) {
     console.log(response);
@@ -160,51 +232,94 @@ app.get(`/api/billings/invoice/:invoiceNos`, async (req, res) => {
 });
 
 //Insertion Billings For The Companies(POST)
-app.post(`/api/billings`, (req, res) => {
-  const { companyName, companyMaterials } = req.body;
+app.post(`/api/billings`, async (req, res) => {
+  console.log("Request Body:", req.body);
+  let { companyName, companyMaterials } = req.body;
+  companyName = companyName.toLowerCase().trim();
 
-  const companyInfo = company.find(
-    (c) => c.name.toLowerCase() === companyName.toLowerCase()
-  );
-
-  if (!companyInfo) {
-    return res.status(400).send("Company does not exist");
+  if (!companyName || !Array.isArray(companyMaterials)) {
+    return res.status(400).send("Missing required fields");
   }
 
-  const { GSTNos, email, stateCode } = companyInfo;
+  console.log(companyName, companyMaterials);
+
+  const companyInfo = await db
+    .collection("company")
+    .findOne({ name: { $regex: new RegExp(companyName, "i") } });
+
+  if (!companyInfo) {
+    console.log(` Companyinfo failed:- ${companyInfo}`);
+    return res.status(400).send("Company does not exist");
+  }
+  console.log(companyInfo);
+  // const { GSTNos, email, stateCode } = companyInfo;
 
   const updatedMaterials = [];
   for (let i = 0; i < companyMaterials.length; i++) {
-    const { name, kg } = companyMaterials[i];
-    const material = materials.find(
-      (m) => m.name.toLowerCase() === name.toLowerCase()
-    );
+    let { name, kg } = companyMaterials[i];
+    name = name.toLowerCase().trim();
+    kg = parseInt(kg, 10);
 
+    const material = await db
+      .collection("materials")
+      .findOne({ name: { $regex: new RegExp(name, "i") } });
+    console.log(material);
     if (!material) {
       return res.status(400).send(`Material ${name} does not exist`);
     }
 
-    updatedMaterials.push({ ...material, kg });
+    updatedMaterials.push({ ...material, kg: kg });
   }
 
-  const lastBill = billings[billings.length - 1];
-  const newInvoiceNos = lastBill ? lastBill.invoiceNos + 1 : 240001;
+  console.log(`\n\nFinal updatedMaterials:- ${updatedMaterials}`);
+  const lastBill = await db
+    .collection("billings")
+    .find()
+    .sort({ invoiceNos: -1 })
+    .limit(1)
+    .toArray();
+  const newInvoiceNos = lastBill.length ? lastBill[0].invoiceNos + 1 : 240001;
 
   const date = new Date().toLocaleDateString();
   const time = new Date().toLocaleTimeString();
   const newBill = {
-    companyName,
     invoiceNos: newInvoiceNos,
-    GSTNos,
-    email,
-    stateCode,
+    companyName,
+    ...companyInfo,
     companyMaterials: updatedMaterials,
     date,
     time,
   };
 
-  billings.push(newBill);
-  res.status(201).send(newBill);
+  console.log(`\n\nNewbill:- ${newBill}`);
+  try {
+    const result = await db.collection("billings").insertOne(newBill);
+    // console.log(`Result:- ${JSON.stringify(result, null, 2)}}`);
+
+    if (result.acknowledged) {
+      console.log(result.acknowledged);
+      res.status(201).send(newBill);
+    } else {
+      console.log(result.status);
+      res.status(500).send(`Failed to insert the materials`);
+    }
+  } catch (err) {
+    console.error("Error during insertion:", err); // Log error details
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.delete("/api/materials", async (req, res) => {
+  try {
+    const result = await db.collection("materials").deleteMany({});
+    if (result.deletedCount === 0) {
+      res.status(200).send({ message: "No documents to be deleted" });
+    }
+
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
 });
 
 //Checking db connect and server connection.
