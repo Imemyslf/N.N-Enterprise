@@ -36,6 +36,9 @@ textarea {
     width: 10em;
     margin-left: 21em;
   }
+  & p, h1, h4 {
+    margin-bottom: 0;
+  }
 }
 
 .logo > img {
@@ -95,7 +98,7 @@ textarea {
   }
 
   & .labels2 > div {
-    margin: 0.2em 0.2em 0.2em 0.5em;
+    margin: 0.2em 0.2em 0 0.5em;
     /* border: 2px solid rgb(28, 45, 28); */
   }
 
@@ -130,11 +133,15 @@ textarea {
 
   & .et1 > p {
     margin-left: 2em;
+    margin-bottom: 0;
   }
 
   & .et2 {
     text-align: center;
     border-bottom: 2px solid black;
+  }
+  & .et2 > p {
+    margin-bottom: 0;
   }
 }
 
@@ -146,6 +153,9 @@ textarea {
     padding: 0.2em;
     border: 2px solid black;
     border-style: none solid solid none;
+  }
+  & > div > p {
+    margin-bottom: 0;
   }
 
   & > div:first-child {
@@ -202,6 +212,9 @@ textarea {
     text-align: end;
     padding-right: 0.2rem;
   }
+  & .amtinfo > div > p {
+    margin-bottom: 0;
+  }
 
   & .amtinfo > div:last-child {
     border-style: none none none none;
@@ -209,12 +222,19 @@ textarea {
 
   & .amtval > p {
     border: 2px solid black;
-    height: 1.55em;
+    height: 0.52em;
     border-style: none none solid none;
   }
-
+  & .amtval > .amtval-first {
+    height: 1.6em;
+  }
+  
   & .amtval > p:last-child {
     border-style: none;
+    margin-bottom: 0;
+  }
+  & .amtinfo {
+    height: auto;
   }
 }
 
@@ -280,6 +300,10 @@ textarea {
     }
   }
 
+  & .party > p {
+    margin-bottom: 0;
+  }
+
   & .rec {
     text-align: center;
     margin-top: 0.5em;
@@ -299,5 +323,6 @@ textarea {
   border-style: none solid solid solid;
   & > p {
     margin-left: 1em;
+    margin-bottom: 0;
   }
 }

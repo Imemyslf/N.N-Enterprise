@@ -70,14 +70,14 @@ function Main() {
             <div>G. Total</div>
           </div>
           <div className="amtval">
-            <p></p>
+            <p className="amtval-first"></p>
             <p></p>
             <p></p>
             <p></p>
             <p></p>
           </div>
           <div className="amtval">
-            <p></p>
+            <p className="amtval-first"></p>
             <p></p>
             <p></p>
             <p></p>
