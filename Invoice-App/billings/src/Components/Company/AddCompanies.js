@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Button, Form, Row, Col } from "react-bootstrap";
-import "../styles/Company.css";
 
-const Company = () => {
+export const AddCompanies = () => {
   const [companyName, setCompanyName] = useState("");
   const [companyGST, setCompanyGST] = useState("");
   const [companyEmail, setCompanyEmail] = useState("");
@@ -29,7 +28,7 @@ const Company = () => {
         stateCode: companyStateCode,
       };
       const response = await axios.post(
-        `http://localhost:8000/api/company`,
+        `http://localhost:8000/api/company/insert`,
         inputs
       );
 
@@ -110,46 +109,6 @@ const Company = () => {
           SUBMIT
         </Button>
       </Form>
-
-      {/* <h1>{name}</h1>
-      <form action="">
-        <Label name="Company's Name:-" /> <br />
-        <Input
-          type="text"
-          placeholder="Enter Company's name"
-          value={companyName}
-          change={(e) => setCompanyName(e.target.value)}
-        />
-        <br />
-        <Label name="Company's GST Nos:-" /> <br />
-        <Input
-          type="text"
-          placeholder="Enter Company's GST Nos"
-          value={companyGST}
-          change={(e) => setCompanyGST(e.target.value)}
-        />
-        <br />
-        <Label name="Company's Email:-" /> <br />
-        <Input
-          type="text"
-          placeholder="Enter Company's name"
-          value={companyEmail}
-          change={(e) => setCompanyEmail(e.target.value)}
-        />
-        <br />
-        <Label name="Company's GST Nos:-" /> <br />
-        <Input
-          type="text"
-          placeholder="Enter Company's name"
-          value={companyStateCode}
-          change={(e) => setCompanyStateCode(e.target.value)}
-        />
-        <br />
-        <br />
-        <button onClick={displayName}>Click Me!!</button>
-      </form> */}
     </>
   );
 };
-
-export default Company;
