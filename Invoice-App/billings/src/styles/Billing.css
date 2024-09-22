@@ -10,16 +10,16 @@
 }
 
 .billing-form {
-  margin-top: 5% !important;
+  margin-top: 5%;
   width: 50%;
   height: auto;
   border: 2px solid black;
   border-radius: 10px;
-  padding: 10px !important;
+  padding: 10px;
   /* background: #71edf17e; */
 
   & h1 {
-    margin: 0.2em 3em !important;
+    margin: 0.2em 3em;
     /* border: 5px solid black; */
     text-align: center;
     color: #3e8fda;
@@ -27,21 +27,21 @@
 }
 
 form {
-  margin: 10px !important;
+  margin: 10px;
   /* border: 5px solid red; */
-  padding: 10px !important;
+  padding: 10px;
 
   & label {
     font-weight: 600;
-    margin-bottom: 5px !important;
+    margin-bottom: 5px;
     font-size: 20px;
     color: #3e8fda;
   }
 
   & input {
-    margin-bottom: 5px !important;
+    margin-bottom: 5px;
     border-radius: 5px;
-    padding: 2px !important;
+    padding: 2px;
   }
 }
 
@@ -50,17 +50,17 @@ form {
   justify-content: space-between;
   flex: 1;
   /* border: 5px solid green; */
-  padding: 10px !important;
+  padding: 10px;
 
   & button {
-    height: 40px !important;
-    /* padding: 10px !important; */
+    height: 40px;
+    /* padding: 10px ; */
     /* border: 5px solid green; */
-    margin-top: 25px !important;
+    margin-top: 25px;
     /* text-align: center; */
     border-radius: 10px;
     width: 80px;
-    padding: 1px !important;
+    padding: 1px;
     color: black;
     font-weight: bold;
     background: rgb(247, 124, 124);
@@ -76,16 +76,16 @@ form {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px !important;
+    margin-top: 20px;
   }
   & button {
     /* border: 5px solid green; */
-    width: 150px !important;
+    width: 150px;
     height: 40px;
     border-radius: 10px;
     background: rgb(147, 204, 255);
     width: 120px;
     font-weight: 600;
-    padding: 2px !important;
+    padding: 2px;
   }
 }

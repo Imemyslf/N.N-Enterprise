@@ -2,11 +2,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 import HomePage from "./Pages/HomePage";
 import { BillingList, AddBilling, SearchBilling } from "./Pages/Billing";
-import { CompanyList, AddCompany, SearchCompany } from "./Pages/Company";
+import { CompanyList, AddCompany } from "./Pages/Company";
 import { AddMaterials, MaterialsList, SearchMaterial } from "./Pages/Materials";
 import PageNotFound from "./Pages/PageNotFound";
 import NavBar from "./NavBar";
-// import Company from "./Pages/Company";
 import { Invoice } from "./Pages/Invoice";
 
 function App() {
@@ -22,7 +21,6 @@ function App() {
             <Route path="/billing/:companyName" element={<SearchBilling />} />
             <Route path="/company" element={<CompanyList />} />
             <Route path="/company-form" element={<AddCompany />} />
-            <Route path="/company/:companyName" element={<SearchCompany />} />
             <Route path="/materials" element={<MaterialsList />} />
             <Route path="/materials-form" element={<AddMaterials />} />
             <Route path="/materials/:materialId" element={<SearchMaterial />} />
