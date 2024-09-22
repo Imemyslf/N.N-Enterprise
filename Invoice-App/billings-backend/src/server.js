@@ -29,13 +29,21 @@ app.get(`/api/company/search/:name`, async (req, res) => {
   let { name } = req.params;
   name = name.trim();
 
-  const response = await db.collection("company").findOne({ name });
-  console.log(`Company data found: ${JSON.stringify(response)}`);
-  if (response) {
-    console.log(response);
-    res.json(response);
-  } else {
-    res.status(404).send(`Company ${name} is not found or spelling error`);
+  try {
+    const response = await db
+      .collection("company")
+      .find({ name: { $regex: name, $options: "i" } })
+      .toArray();
+    console.log(`Company data found: ${JSON.stringify(response)}`);
+    if (response.length > 0) {
+      console.log(response);
+      res.send(response);
+    } else {
+      res.status(404).send(`No companies found matching ${name}`);
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).send(`Server error ${e}`);
   }
 });
 
