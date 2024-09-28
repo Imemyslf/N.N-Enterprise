@@ -1,45 +1,105 @@
-import { useState } from "react"; // Import useState hook from React
-import "../../styles/Billing.css"; // Import the required CSS file for styling
-import axios from "axios"; // Import axios for making HTTP requests
+import { useState, useEffect } from "react";
+import "../../styles/Billing.css";
+import axios from "axios";
 import { Button, Form, Row, Col } from "react-bootstrap";
 import "../../styles/Company/Company.css";
+import CompanyInput from "./CompanyNameMate/SearchCompany";
+import MaterialInput from "./CompanyNameMate/SearchMaterial";
+
 // Define AddBill component
 export const AddBill = () => {
-  // Set up state for billing details (company name and materials) and form submission status
   const [billingDetails, setBillingDetails] = useState({
-    companyName: "", // Initialize company name as an empty string
-    companyMaterials: [], // Initialize an empty array for company materials
+    companyName: "",
+    companyMaterials: [],
   });
-  const [submitted, setSubmitted] = useState(false); // State to track if the form has been submitted
+
+  const [suggesttedCompanyName, setSuggesttedCompanyName] = useState([]);
+  const [suggesttedMaterialName, setSuggesttedMaterialName] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState([]);
+  const [activeMaterialIndex, setActiveMaterialIndex] = useState(null); // Track active material input index
 
   // Handle change for company name input
-  const handleCompany = (e) => {
-    const { value } = e.target; // Extract the input value from the event
+  const handleCompany = async (e) => {
+    const { value } = e.target;
     setBillingDetails((prevalue) => ({
       ...prevalue,
-      companyName: value, // Update the company name in the billing details state
+      companyName: value,
     }));
+
+    if (value.trim() === "") {
+      setSuggesttedCompanyName([]);
+      console.log("Company suggestion cleared");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/company/search/${value}`
+      );
+
+      setSuggesttedCompanyName(response.data || []);
+    } catch (e) {
+      console.log("No matching company", e);
+      setSuggesttedCompanyName([]);
+    }
+  };
+
+  const handleSelectCompany = (company) => {
+    setBillingDetails((prevalue) => ({
+      ...prevalue,
+      companyName: company.name,
+    }));
+    setSuggesttedCompanyName([]);
+    setSelectedCompany([company]);
+    console.log(`handleSelectCompany:-`, selectedCompany);
   };
 
   // Handle input for material name and kg (weight)
-  const handleMaterialChange = (index, field, value) => {
-    console.log("Handling change:", { index, field, value }); // Debugging log
-    const newMaterials = [...billingDetails.companyMaterials]; // Make a copy of the companyMaterials array
+  const handleMaterialChange = async (index, field, e) => {
+    const { value } = e.target;
+    const newMaterials = [...billingDetails.companyMaterials];
     newMaterials[index] = {
       ...newMaterials[index],
-      [field]: value, // Update the specific field (name or kg) for the material at the given index
+      [field]: value,
     };
     setBillingDetails((prev) => ({
       ...prev,
-      companyMaterials: newMaterials, // Update the state with the modified materials array
+      companyMaterials: newMaterials,
     }));
+
+    // Set the active material index
+    setActiveMaterialIndex(index);
+
+    // Handle suggestion clearing and fetching only for the material name
+    if (field === "name") {
+      const name = value.trim();
+
+      // Clear suggestions only if the input is empty
+      if (name === "") {
+        setSuggesttedMaterialName([]);
+        console.log("Material suggestion cleared because input is empty");
+        return;
+      }
+
+      // Fetch material suggestions if input is not empty
+      try {
+        const material = await axios.get(
+          `http://localhost:8000/api/materials/search/${name}`
+        );
+
+        setSuggesttedMaterialName(material.data || []);
+      } catch (e) {
+        console.error(`No materials found for ${name}, \n Error:-${e}`);
+        setSuggesttedMaterialName([]);
+      }
+    }
   };
 
   // Add new material input fields
   const addMaterialInput = () => {
     setBillingDetails((prev) => ({
       ...prev,
-      companyMaterials: [...prev.companyMaterials, { name: "", kg: "" }], // Add a new empty material object to the array
+      companyMaterials: [...prev.companyMaterials, { name: "", kg: "" }],
     }));
   };
 
@@ -56,11 +116,9 @@ export const AddBill = () => {
 
   // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    setSubmitted(true); // Set the submitted state to true
-    console.log("Billing Details Submitted:", billingDetails); // Log the submitted billing details for debugging
+    e.preventDefault();
+    console.log("Billing Details Submitted:", billingDetails.companyName);
 
-    // Log each material and its kg field type for debugging
     billingDetails.companyMaterials.forEach((material, index) => {
       console.log(`Material ${index}:`, material);
       console.log(`Type of kg for material ${index}:`, typeof material.kg);
@@ -69,7 +127,7 @@ export const AddBill = () => {
     // Try submitting the billing details to the server
     try {
       const result = await axios.post(
-        `http://localhost:8000/api/billings`, // API endpoint for submitting billing details
+        `http://localhost:8000/api/billings`,
         billingDetails
       );
 
@@ -78,7 +136,6 @@ export const AddBill = () => {
         alert(
           `Result-Status: ${result.status}\n Bill Information Added successfully`
         );
-        console.log(result.data); // Log the response data for debugging
       } else {
         alert(
           `Result-Status: ${result.status}\n Failed in Addition of Bill Information`
@@ -91,215 +148,60 @@ export const AddBill = () => {
     }
   };
 
+  // Function to handle selecting a material from suggestions
+  const selectMaterial = (material, index) => {
+    console.log(`Selected material:`, material.name, `at index:`, index);
+
+    // Update only the specific material at the provided index
+    const newMaterials = [...billingDetails.companyMaterials];
+    newMaterials[index] = {
+      ...newMaterials[index],
+      name: material.name, // Update the name field with the selected material name
+    };
+
+    // Update the state with the modified materials array
+    setBillingDetails((prev) => ({
+      ...prev,
+      companyMaterials: newMaterials,
+    }));
+
+    // Clear the material suggestions after selection
+    setSuggesttedMaterialName([]);
+    console.log(`Updated materials array:`, billingDetails.companyMaterials);
+  };
+
   return (
     <>
-      {/* <div className="center-div">
-        <div className="billing-form">
-          <h1>Billing Form</h1>
-
-          <div className="b-form">
-            <form onSubmit={handleSubmit}>
-              <label htmlFor="companyName">Company Name: </label>
-              <br />
-              <input
-                type="text"
-                placeholder="Company Name"
-                value={billingDetails.companyName}
-                onChange={handleCompany} // Handle company name change
-                required // Make the field required for form submission
-              />
-              <br />
-              <br />
-
-              {/* Render dynamic material input fields 
-              {billingDetails.companyMaterials.map((material, index) => (
-                <div className="matkg" key={index}>
-                  <div className="first-material">
-                    <label htmlFor={`material-${index}`}>
-                      Material: {index + 1}{" "}
-                    </label>
-                    <br />
-                    <input
-                      type="text"
-                      placeholder="Material Name"
-                      value={material.name} // Value of the material name
-                      onChange={(e) =>
-                        handleMaterialChange(index, "name", e.target.value)
-                      } // Handle material name change
-                      required // Make the field required for form submission
-                    />
-                  </div>
-                  <div className="second-kg">
-                    <label htmlFor={`kg-${index}`}>KG: </label>
-                    <br />
-                    <input
-                      type="number"
-                      placeholder="KG"
-                      value={material.kg} // Value of the material weight
-                      onChange={(e) =>
-                        handleMaterialChange(index, "kg", e.target.value)
-                      } // Handle kg change
-                      required // Make the field required for form submission
-                    />
-                  </div>
-
-                  {/* Delete button for material 
-                  <button
-                    type="button"
-                    onClick={() => deleteMaterialInput(index)} // Remove the material input
-                  >
-                    Delete
-                  </button>
-                  <br />
-                  <br />
-                </div>
-              ))}
-
-              {/* Button to add new material input 
-              <div className="center-btn">
-                <div>
-                  <button type="button" onClick={addMaterialInput}>
-                    More Materials
-                  </button>
-                </div>
-                <div>
-                  {/* Submit button 
-                  <button type="submit">Submit</button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      <br /> */}
-      {/* <Form className="form-container">
-        <h3 className="form-header">ADD NEW BILL</h3>
-        <Row className="mb-4">
-          <Form.Label>Company Name </Form.Label>
-          <Col sm="4">
-            <Form.Control
-              type="text"
-              value={billingDetails.companyName}
-              placeholder="Enter Company Name"
-              onChange={handleCompany} // Handle company name change
-              required // Make the field required for form submission
-            />
-          </Col>
-        </Row>
-        {billingDetails.companyMaterials.map((material, index) => (
-          <>
-            <Row className="mb-4">
-              <Form.Group as={Col} sm="4">
-                <Form.Label>Material {index + 1}</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="Material Name"
-                  value={material.name}
-                  onChange={(e) =>
-                    handleMaterialChange(index, "name", e.target.value)
-                  } // Handle material name change
-                  required
-                />
-              </Form.Group>
-              <Form.Group as={Col} sm="4">
-                <Form.Label>KG </Form.Label>
-                <Form.Control
-                  type="number"
-                  placeholder="KG"
-                  value={material.kg} // Value of the material weight
-                  onChange={(e) =>
-                    handleMaterialChange(index, "kg", e.target.value)
-                  }
-                  required
-                />
-              </Form.Group>
-              <Form.Group as={Col} sm="2" className="d-flex align-items-center">
-                <Button
-                  variant="danger"
-                  onClick={() => deleteMaterialInput(index)}
-                >
-                  DELETE
-                </Button>
-              </Form.Group>
-            </Row>
-          </>
-        ))}
-        <Row className="mb-4">
-          <Form.Group as={Col}>
-            <Button
-              varient="primary"
-              onClick={addMaterialInput}
-              className="mr-2"
-            >
-              MORE MATERIALS
-            </Button>
-            <Button varient="primary" onClick={handleSubmit}>
-              SUBMIT
-            </Button>
-          </Form.Group>
-        </Row>
-      </Form> */}
-      <Form
-        className="form-container"
-        style={{ width: "1000px", marginLeft: "350px" }}
-      >
+      <Form className="form-container">
         <h3 className="form-header">ADD NEW BILL</h3>
 
-        <Row className="mb-4">
-          <Form.Label>Company Name </Form.Label>
-          <Col sm="4">
-            <Form.Control
-              type="text"
-              value={billingDetails.companyName}
-              placeholder="Enter Company Name"
-              onChange={handleCompany}
-              required
-            />
-          </Col>
-        </Row>
+        <CompanyInput
+          id="companyNameInput"
+          value={billingDetails.companyName}
+          placeholder="Enter Company Name"
+          change={handleCompany}
+          company={billingDetails.companyName}
+          companyname={suggesttedCompanyName}
+          suggestcompany={suggesttedCompanyName}
+          selectcompany={handleSelectCompany}
+        />
 
         {billingDetails.companyMaterials.map((material, index) => (
-          <Row className="mb-4" key={index}>
-            <Form.Group as={Col} sm="5">
-              <Form.Label>Material {index + 1}</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Material Name"
-                value={material.name}
-                onChange={(e) =>
-                  handleMaterialChange(index, "name", e.target.value)
-                }
-                required
-              />
-            </Form.Group>
-
-            <Form.Group as={Col} sm="5">
-              <Form.Label>KG</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="KG"
-                value={material.kg}
-                onChange={(e) =>
-                  handleMaterialChange(index, "kg", e.target.value)
-                }
-                required
-              />
-            </Form.Group>
-
-            <Form.Group as={Col} sm="2" className="d-flex align-items-center">
-              <Button
-                variant="danger" // Makes the button red
-                onClick={() => deleteMaterialInput(index)}
-                style={{ marginTop: "30px" }}
-              >
-                DELETE
-              </Button>
-            </Form.Group>
-          </Row>
+          <MaterialInput
+            key={index}
+            material={material}
+            index={index}
+            handleMaterialChange={handleMaterialChange}
+            deleteMaterialInput={deleteMaterialInput}
+            suggesttedMaterialName={suggesttedMaterialName}
+            activeMaterialIndex={activeMaterialIndex}
+            setActiveMaterialIndex={setActiveMaterialIndex}
+            selectMaterial={selectMaterial}
+          />
         ))}
 
         <Row className="mb-4" style={{ marginTop: "50px" }}>
-          <Col style={{ marginLeft: "130px" }}>
+          <Col style={{ marginLeft: "170px" }}>
             <Button
               variant="primary"
               onClick={addMaterialInput}

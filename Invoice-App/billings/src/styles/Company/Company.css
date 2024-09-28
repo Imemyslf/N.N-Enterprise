@@ -1,10 +1,14 @@
 .form-container {
-    background: #ffffff;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
-    margin: 5rem 15rem;
-    padding: 5rem;
-    border-radius: 5px;
+  background: #ffffff;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+  margin: 5rem 23rem;
+  padding: 5rem;
+  border-radius: 5px;
 }
 .form-header {
-    margin-bottom: 4rem;
+  margin-bottom: 4rem;
+  font-size: 40px;
+  font-weight: 700;
+  text-decoration: underline;
 }
