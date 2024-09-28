@@ -46,6 +46,7 @@ export const AddCompanies = () => {
         className="form-container" // Apply custom CSS for styling the form container
         noValidate // Disable default HTML form validation
         validated={validated} // Enable Bootstrap validation feedback
+        style={{ width: "965px" }}
       >
         <h3 className="form-header">ADD NEW COMPANY</h3> {/* Form header */}
         <Col sm="12">
@@ -55,7 +56,7 @@ export const AddCompanies = () => {
             {/* Form group for company name input */}
             <Form.Group as={Col} controlId="formGridCompanyName">
               <Form.Label>Company name</Form.Label>
-              <Col sm="10">
+              <Col sm="9">
                 <Form.Control
                   type="text" // Input type for company name
                   value={companyName} // Bind the input value to the state
@@ -69,7 +70,7 @@ export const AddCompanies = () => {
             {/* Form group for company GST number input */}
             <Form.Group as={Col} controlId="formGridCompanyGSTNo">
               <Form.Label>Company GSTIN no.</Form.Label>
-              <Col sm="10">
+              <Col sm="9">
                 <Form.Control
                   type="text" // Input type for GST number
                   value={companyGST} // Bind the input value to the state
@@ -88,7 +89,7 @@ export const AddCompanies = () => {
             {/* Form group for company email input */}
             <Form.Group as={Col} controlId="formGridCompanyEmail">
               <Form.Label>Company email</Form.Label>
-              <Col sm="10">
+              <Col sm="9">
                 <Form.Control
                   type="email" // Input type for email
                   value={companyEmail} // Bind the input value to the state

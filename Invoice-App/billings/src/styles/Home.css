@@ -1,8 +1,46 @@
 main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    flex-direction: row;
-    height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-direction: row;
+  height: 50vh;
+}
+
+.h-container {
+  display: flex;
+  margin: 100px 0;
+  justify-content: center;
+  align-items: center;
+}
+.main-container {
+  border: 5px solid black;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 600px;
+  /* top: -50%;
+  left: -50%; */
+
+  & > div > img {
+    width: 300px;
+    height: 300px;
+    border: 2px solid red;
+    object-fit: contain;
+  }
+}
+
+.first-div {
+  & .addCompany > img {
+    width: 300px;
+    height: 300px;
+    border: 2px solid red;
+    object-fit: contain;
+  }
+}
+
+.addCompany > img {
+  width: 300px;
+  height: 300px;
+  border: 2px solid red;
+  object-fit: contain;
 }

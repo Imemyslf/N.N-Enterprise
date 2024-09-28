@@ -1,6 +1,7 @@
 import express from "express";
 import { db, connectToDb } from "./database.js";
 import cors from "cors";
+// import cron from "node-cron";
 
 const app = express();
 const port = 8000;
@@ -12,6 +13,30 @@ app.use(
     origin: "http://localhost:3000",
   })
 );
+
+// cron.schedule("0 0 * * *", async () => {
+//   console.log("Running daily task to update daysLeft and remove expired bills");
+//   try {
+//     const response = await db
+//       .collection("billings")
+//       .updateMany({ daysLeft: { $gt: 0 } }, { $inc: { daysLeft: -1 } });
+
+//     if (response.acknowledged) {
+//       console.log("Billings updated successfully daysLeft decremented");
+//     } else {
+//       console.log("Error in updating billings");
+//     }
+
+//     const result = await db.collection("billings").deleteMany({ daysLeft: 0 });
+//     if (result.acknowledged) {
+//       console.log("Bill deleted successfully ");
+//     } else {
+//       console.log("Error in deleting bills");
+//     }
+//   } catch (error) {
+//     console.error("Error during daily task execution:", error);
+//   }
+// });
 
 //Company List Name(GET)
 app.get(`/api/company`, async (req, res) => {
@@ -119,15 +144,23 @@ app.get(`/api/materials/search/:name`, async (req, res) => {
   let { name } = req.params;
   console.log(name);
   name = name.trim();
-
-  const response = await db.collection("materials").findOne({ name });
-  console.log(`Materials data found: ${JSON.stringify(response)}`);
-
-  if (response) {
+  try {
+    const response = await db
+      .collection("materials")
+      .find({ name: { $regex: name, $options: "i" } })
+      .toArray();
     console.log(response);
-    res.send(response);
-  } else {
-    res.status(404).send(`Material ${name} is not found`);
+    console.log(`Materials data found: ${JSON.stringify(response)}`);
+
+    if (response.length > 0) {
+      console.log(response);
+      res.send(response);
+    } else {
+      res.status(404).send(`No materials found matching ${name}`);
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send(`Server error ${err}`);
   }
 });
 
@@ -204,7 +237,7 @@ app.get(`/api/billings`, async (req, res) => {
 });
 
 //Specific Comapny Billing Search(GET)
-app.get(`/api/billings/company/:companyName`, async (req, res) => {
+app.get(`/api/billings/company/search/:companyName`, async (req, res) => {
   let { companyName } = req.params;
 
   companyName = companyName.trim();
@@ -220,7 +253,7 @@ app.get(`/api/billings/company/:companyName`, async (req, res) => {
 });
 
 //Specific Invoice Billing Search(GET)
-app.get(`/api/billings/invoice/:invoiceNos`, async (req, res) => {
+app.get(`/api/billings/invoice/search/:invoiceNos`, async (req, res) => {
   let { invoiceNos } = req.params;
   invoiceNos = parseInt(invoiceNos, 10);
   console.log(`invoiceNos;- ${invoiceNos}`);
@@ -240,10 +273,10 @@ app.get(`/api/billings/invoice/:invoiceNos`, async (req, res) => {
 });
 
 //Insertion Billings For The Companies(POST)
-app.post(`/api/billings`, async (req, res) => {
+app.post(`/api/billings/insert`, async (req, res) => {
   console.log("Request Body:", req.body);
   let { companyName, companyMaterials } = req.body;
-  companyName = companyName.toLowerCase().trim();
+  companyName = companyName.trim();
 
   if (!companyName || !Array.isArray(companyMaterials)) {
     return res.status(400).send("Missing required fields");
@@ -265,7 +298,7 @@ app.post(`/api/billings`, async (req, res) => {
   const updatedMaterials = [];
   for (let i = 0; i < companyMaterials.length; i++) {
     let { name, kg } = companyMaterials[i];
-    name = name.toLowerCase().trim();
+    name = name.trim();
     kg = parseInt(kg, 10);
 
     const material = await db
@@ -276,7 +309,8 @@ app.post(`/api/billings`, async (req, res) => {
       return res.status(400).send(`Material ${name} does not exist`);
     }
 
-    updatedMaterials.push({ ...material, kg: kg });
+    const { _id, ...restOfMaterials } = material;
+    updatedMaterials.push({ ...restOfMaterials, kg: kg });
   }
 
   console.log(`\n\nFinal updatedMaterials:- ${updatedMaterials}`);
@@ -287,16 +321,20 @@ app.post(`/api/billings`, async (req, res) => {
     .limit(1)
     .toArray();
   const newInvoiceNos = lastBill.length ? lastBill[0].invoiceNos + 1 : 240001;
+  const daysLeft = 365;
+
+  const { _id, name, ...restOfCompanyInfo } = companyInfo;
 
   const date = new Date().toLocaleDateString();
   const time = new Date().toLocaleTimeString();
   const newBill = {
     invoiceNos: newInvoiceNos,
     companyName,
-    ...companyInfo,
+    ...restOfCompanyInfo,
     companyMaterials: updatedMaterials,
     date,
     time,
+    daysLeft,
   };
 
   console.log(`\n\nNewbill:- ${newBill}`);
@@ -317,9 +355,9 @@ app.post(`/api/billings`, async (req, res) => {
   }
 });
 
-app.delete("/api/materials", async (req, res) => {
+app.delete("/api/billings/delete", async (req, res) => {
   try {
-    const result = await db.collection("materials").deleteMany({});
+    const result = await db.collection("billings").deleteMany({});
     if (result.deletedCount === 0) {
       res.status(200).send({ message: "No documents to be deleted" });
     }
@@ -327,6 +365,40 @@ app.delete("/api/materials", async (req, res) => {
     res.status(200).send(result);
   } catch (err) {
     res.status(404).send(err);
+  }
+});
+
+app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
+  let { invoiceNos } = req.params;
+  invoiceNos = parseInt(invoiceNos, 10);
+  try {
+    const result = await db.collection("billings").deleteOne({ invoiceNos });
+    if (result.deletedCount === 0) {
+      res.status(200).send({ message: "No documents to be deleted" });
+    }
+
+    res.status(200).send(result);
+  } catch (err) {
+    res.status(404).send(err);
+  }
+});
+
+app.put(`/api/billings/add`, async (req, res) => {
+  try {
+    const response = await DelayNode.collection("billings").updateMany(
+      {},
+      { $set: { daysLeft: 365 } }
+    );
+
+    if (response.acknowledged) {
+      console.log(response);
+      res.status(201).send(response);
+    } else {
+      res.status(400).send({ message: "Error updating billings" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ message: "Internal Server Error" });
   }
 });
 

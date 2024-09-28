@@ -1,38 +1,43 @@
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    240deg,
+    rgba(20, 76, 186, 0.5),
+    rgba(243, 220, 220, 0.5)
+  );
+  padding: 10px;
 
-header{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(140deg, rgba(20, 76, 186, 0.5), rgba(243, 220, 220, 0.5));    
-    padding: 10px;
-
-
-    &  .logo > img{
-        width: 4rem;
-        height: 4rem;
-        object-fit: contain;
-        /* border:5px solid black; */
-      }
+  & .logo > img {
+    width: 4rem;
+    height: 4rem;
+    object-fit: contain;
+    /* border:5px solid black; */
+  }
 }
-#nav-bar{
-    display: flex;
-    width: 100%;    
-    gap: 20px;
-    justify-content: end;
-    align-items: center;
-    margin-top: 10px;
-    /* padding: 10px; */
 
-    & > div{
-        width: 5em;
-        height: auto;
-        color:black;
-        font-size: 2em;
-        text-align: center;
-        font-weight: bold;
-    }
+#nav-bar {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  /* padding: 10px; */
+  /* border: 5px solid black; */
+  gap: 3em;
 
-    & > div:hover{
-        filter:drop-shadow( -5px 5px 5px rgba(0, 12, 248, 0.5));
-    }
+  & > div {
+    width: 5em;
+    height: auto;
+    color: black;
+    text-align: center;
+
+    /* border: 5px solid green; */
+  }
+
+  & > div:hover {
+    cursor: pointer;
+  }
 }
