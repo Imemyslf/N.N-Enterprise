@@ -24,7 +24,7 @@ function App() {
             <Route path="/materials" element={<MaterialsList />} />
             <Route path="/materials-form" element={<AddMaterials />} />
             <Route path="/materials/:materialId" element={<SearchMaterial />} />
-            <Route path="/billing/invoice" element={<Invoice />} />
+            <Route path="/billings/invoice" element={<Invoice />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>
         </div>

@@ -1,10 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "../../styles/Billing.css";
 import axios from "axios";
-import { Button, Form, Row, Col } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import "../../styles/Company/Company.css";
 import CompanyInput from "./CompanyNameMate/SearchCompany";
 import MaterialInput from "./CompanyNameMate/SearchMaterial";
+import Buttons from "./CompanyNameMate/Buttons";
+import { useNavigate } from "react-router-dom";
 
 // Define AddBill component
 export const AddBill = () => {
@@ -13,6 +15,7 @@ export const AddBill = () => {
     companyMaterials: [],
   });
 
+  const navigate = useNavigate();
   const [suggesttedCompanyName, setSuggesttedCompanyName] = useState([]);
   const [suggesttedMaterialName, setSuggesttedMaterialName] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState([]);
@@ -117,8 +120,30 @@ export const AddBill = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Billing Details Submitted:", billingDetails.companyName);
+    console.log(`BillingsDetail"-`, billingDetails);
+    if (billingDetails.companyName.trim() === "") {
+      alert("Company name is required.");
+      return;
+    }
 
+    // Validate materials
+    if (billingDetails.companyMaterials.length === 0) {
+      alert("At least one material must be added.");
+      return;
+    }
+
+    for (const material of billingDetails.companyMaterials) {
+      if (material.name.trim() === "") {
+        alert("Material name is required for all materials.");
+        return;
+      }
+      if (!material.kg || material.kg <= 0) {
+        alert("Material KG must be a positive number.");
+        return;
+      }
+    }
+
+    console.log("Billing Details Submitted:", billingDetails.companyName);
     billingDetails.companyMaterials.forEach((material, index) => {
       console.log(`Material ${index}:`, material);
       console.log(`Type of kg for material ${index}:`, typeof material.kg);
@@ -127,7 +152,7 @@ export const AddBill = () => {
     // Try submitting the billing details to the server
     try {
       const result = await axios.post(
-        `http://localhost:8000/api/billings`,
+        `http://localhost:8000/api/billings/insert`,
         billingDetails
       );
 
@@ -136,6 +161,9 @@ export const AddBill = () => {
         alert(
           `Result-Status: ${result.status}\n Bill Information Added successfully`
         );
+        navigate(`/billings/invoice/${billingDetails.companyName}`, {
+          state: billingDetails,
+        });
       } else {
         alert(
           `Result-Status: ${result.status}\n Failed in Addition of Bill Information`
@@ -200,22 +228,10 @@ export const AddBill = () => {
           />
         ))}
 
-        <Row className="mb-4" style={{ marginTop: "50px" }}>
-          <Col style={{ marginLeft: "170px" }}>
-            <Button
-              variant="primary"
-              onClick={addMaterialInput}
-              className="mr-2"
-            >
-              MORE MATERIALS
-            </Button>
-          </Col>
-          <Col>
-            <Button variant="primary" onClick={handleSubmit} className="ml-2">
-              SUBMIT
-            </Button>
-          </Col>
-        </Row>
+        <Buttons
+          addMaterialInput={addMaterialInput}
+          handleSubmit={handleSubmit}
+        />
       </Form>
     </>
   );
