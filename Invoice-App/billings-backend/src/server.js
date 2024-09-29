@@ -230,7 +230,7 @@ app.get(`/api/billings`, async (req, res) => {
   const billings = await db.collection("billings").find().toArray();
   if (billings.length > 0) {
     console.log(billings);
-    res.json(billings);
+    res.send(billings);
   } else {
     res.sendStatus(404);
   }
@@ -385,10 +385,9 @@ app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
 
 app.put(`/api/billings/add`, async (req, res) => {
   try {
-    const response = await DelayNode.collection("billings").updateMany(
-      {},
-      { $set: { daysLeft: 365 } }
-    );
+    const response = await db
+      .collection("billings")
+      .updateMany({}, { $set: { daysLeft: 365 } });
 
     if (response.acknowledged) {
       console.log(response);
