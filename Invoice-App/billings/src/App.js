@@ -16,14 +16,13 @@ function App() {
           <NavBar />
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/billing" element={<BillingList />} />
-            <Route path="/billing-form" element={<AddBilling />} />
-            <Route path="/billing/:companyName" element={<SearchBilling />} />
             <Route path="/company" element={<CompanyList />} />
             <Route path="/company-form" element={<AddCompany />} />
             <Route path="/materials" element={<MaterialsList />} />
             <Route path="/materials-form" element={<AddMaterials />} />
-            <Route path="/materials/:materialId" element={<SearchMaterial />} />
+            <Route path="/billing" element={<BillingList />} />
+            <Route path="/billing-form" element={<AddBilling />} />
+            <Route path="/billings" element={<SearchBilling />} />
             <Route path="/billings/invoice" element={<Invoice />} />
             <Route path="*" element={<PageNotFound />} />
           </Routes>

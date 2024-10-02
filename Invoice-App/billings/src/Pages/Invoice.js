@@ -53,7 +53,7 @@ export const Invoice = () => {
         imgWidth * ratio,
         imgHeight * ratio
       );
-      pdf.save(`invoice${count}.pdf`);
+      pdf.save(`${LastBill.invoiceNos}_${count}.pdf`);
       const nos = count + 1;
       setCount(nos);
     });

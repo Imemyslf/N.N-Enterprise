@@ -1,46 +1,48 @@
-main {
+/* main {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1rem;
   flex-direction: row;
   height: 50vh;
-}
+} */
 
-.h-container {
-  display: flex;
-  margin: 100px 0;
-  justify-content: center;
-  align-items: center;
-}
 .main-container {
-  border: 5px solid black;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  width: 600px;
-  /* top: -50%;
-  left: -50%; */
-
-  & > div > img {
-    width: 300px;
-    height: 300px;
-    border: 2px solid red;
-    object-fit: contain;
-  }
+  width: 100vw;
+  height: 100vh;
+  margin: 50px 0;
+  height: auto;
+  /* border: 2px solid red; */
+  position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 .first-div {
-  & .addCompany > img {
+  width: 90%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: auto;
+  /* border: 2px solid green; */
+  & div {
+    /* border: 2px solid orangered; */
+    text-align: center;
+    margin: 10px 1px;
+    padding: 10px 5px;
+  }
+
+  & div:hover {
+    scale: 1.1;
+    transition: 0.2s ease-in;
+  }
+  & p {
+    margin-top: 10px;
+    font-size: 1.5em;
+  }
+  & img {
     width: 300px;
     height: 300px;
-    border: 2px solid red;
-    object-fit: contain;
+    object-fit: cover;
   }
-}
-
-.addCompany > img {
-  width: 300px;
-  height: 300px;
-  border: 2px solid red;
-  object-fit: contain;
 }

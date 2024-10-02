@@ -12,7 +12,7 @@ const NavBar = () => {
   return (
     <>
       <header>
-        {/* <div className="logo">
+        <div className="logo">
           <img
             src={OM_Logo}
             alt="Om_logo"
@@ -20,15 +20,15 @@ const NavBar = () => {
               navigate("/");
             }}
           />
-        </div> */}
+        </div>
         <nav id="nav-bar">
-          {/* <div
+          <div
             onClick={() => {
               navigate("/");
             }}
           >
             <HomeIcon fontSize="large" />
-          </div> */}
+          </div>
           <div
             onClick={() => {
               navigate("/company-form");
