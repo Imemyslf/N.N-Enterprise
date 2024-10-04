@@ -23,7 +23,7 @@ export const BillList = () => {
       }
     };
     showbills();
-  });
+  }, []);
   return (
     <>
       <div className="co-container">
@@ -46,7 +46,10 @@ export const BillList = () => {
                 </ul>
                 <h4>Date:- {billInfo.date}</h4>
                 <h4>Time:- {billInfo.time}</h4>
-                <h4>Days Left:- {billInfo.daysLeft}</h4>
+                <h4>Days Left:- {billInfo.daysLeft} days left</h4>
+                <h4>
+                  Invoice-Paid:- {billInfo.invoicePaid ? "Paid" : "Pending"}
+                </h4>
               </div>
             ))
           ) : (

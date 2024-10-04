@@ -1,10 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import OM_Logo from "./assets/Images/OmLogo.png";
-import HomeIcon from "@mui/icons-material/Home";
-import AddBusinessIcon from "@mui/icons-material/AddBusiness";
-import BusinessIcon from "@mui/icons-material/Business";
-import ReceiptIcon from "@mui/icons-material/Receipt";
-import WarehouseIcon from "@mui/icons-material/Warehouse";
+import ContactUs from "./assets/Images/contact-mail.png";
+import Home from "./assets/Images/home.png";
+import AboutUS from "./assets/Images/profile-user.png";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -27,28 +25,21 @@ const NavBar = () => {
               navigate("/");
             }}
           >
-            <HomeIcon fontSize="large" />
+            <img src={Home} alt="Contact-Us" />
           </div>
           <div
             onClick={() => {
-              navigate("/company-form");
+              navigate("/");
             }}
           >
-            <AddBusinessIcon fontSize="large" />
+            <img src={ContactUs} alt="Contact-Us" />
           </div>
           <div
             onClick={() => {
-              navigate("/materials-form");
+              navigate("/");
             }}
           >
-            <WarehouseIcon fontSize="large" />
-          </div>
-          <div
-            onClick={() => {
-              navigate("/billing-form");
-            }}
-          >
-            <ReceiptIcon fontSize="large" />
+            <img src={AboutUS} alt="Contact-Us" />
           </div>
         </nav>
       </header>

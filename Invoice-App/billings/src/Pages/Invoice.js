@@ -33,9 +33,10 @@ export const Invoice = () => {
     lastBill();
   }, []);
 
-  const downloadPOF = () => {
+  const downloadPOF = async () => {
     const input = pdfRef.current;
-    html2canvas(input).then((canvas) => {
+    try {
+      const canvas = await html2canvas(input);
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4", true);
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -53,10 +54,32 @@ export const Invoice = () => {
         imgWidth * ratio,
         imgHeight * ratio
       );
-      pdf.save(`${LastBill.invoiceNos}_${count}.pdf`);
-      const nos = count + 1;
-      setCount(nos);
-    });
+
+      console.log(
+        `imgData: ${imgData}, pdfWidth: ${pdfWidth}, pdfHeight: ${pdfHeight}, imgWidth: ${imgWidth}, imgHeight: ${imgHeight}`
+      );
+
+      const blobFile = pdf.output("blob");
+
+      const formData = new FormData();
+      formData.append("file", blobFile, `${LastBill.invoiceNos}`);
+      formData.append("invoiceNos", LastBill.invoiceNos);
+
+      const response = await axios.post(
+        `http://localhost:8000/api/invoice/upload`,
+        formData,
+        {
+          headers: { "Content-type": "multipart/form-data" },
+        }
+      );
+      if (response.status === 200) {
+        console.log("Pdf uploaded successfully");
+      } else {
+        console.log("Error while uploading pdf files");
+      }
+    } catch (e) {
+      console.log(`Server Error Message: ${e.message}`);
+    }
   };
 
   return (
@@ -66,7 +89,9 @@ export const Invoice = () => {
         <DataInput copmanyBill={LastBill} />
         <Main copmanyBill={LastBill} />
       </div>
-      <button onClick={downloadPOF}>Click Me</button>
+      <button className="pdf" onClick={downloadPOF}>
+        Click Me
+      </button>
     </>
   );
 };

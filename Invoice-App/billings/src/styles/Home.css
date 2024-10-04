@@ -29,7 +29,8 @@
     /* border: 2px solid orangered; */
     text-align: center;
     margin: 10px 1px;
-    padding: 10px 5px;
+    padding: 20px 10px;
+    box-shadow: 0 4px 15px 10px rgba(0, 0, 0, 0.1);
   }
 
   & div:hover {
@@ -45,4 +46,60 @@
     height: 300px;
     object-fit: cover;
   }
+}
+
+.main-container.blur {
+  filter: blur(5px);
+  transition: filter 0.3s ease;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1000;
+}
+
+.modal-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box; /* Include padding and border in width */
+}
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.complistadd {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 120px;
+}
+.complist,
+.compadd {
+  width: 200px;
+  height: 200px;
+  /* border: 5px solid red; */
+  padding: 60px;
+}
+
+.complist,
+.compadd:hover {
+  cursor: pointer;
 }
