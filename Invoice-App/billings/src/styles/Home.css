@@ -1,46 +1,105 @@
-main {
+/* main {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1rem;
   flex-direction: row;
   height: 50vh;
-}
+} */
 
-.h-container {
-  display: flex;
-  margin: 100px 0;
-  justify-content: center;
-  align-items: center;
-}
 .main-container {
-  border: 5px solid black;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  width: 600px;
-  /* top: -50%;
-  left: -50%; */
-
-  & > div > img {
-    width: 300px;
-    height: 300px;
-    border: 2px solid red;
-    object-fit: contain;
-  }
+  width: 100vw;
+  height: 100vh;
+  margin: 50px 0;
+  height: auto;
+  /* border: 2px solid red; */
+  position: relative;
+  display: flex;
+  justify-content: center;
 }
 
 .first-div {
-  & .addCompany > img {
+  width: 90%;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: auto;
+  /* border: 2px solid green; */
+  & div {
+    /* border: 2px solid orangered; */
+    text-align: center;
+    margin: 10px 1px;
+    padding: 20px 10px;
+    box-shadow: 0 4px 15px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  & div:hover {
+    scale: 1.1;
+    transition: 0.2s ease-in;
+  }
+  & p {
+    margin-top: 10px;
+    font-size: 1.5em;
+  }
+  & img {
     width: 300px;
     height: 300px;
-    border: 2px solid red;
-    object-fit: contain;
+    object-fit: cover;
   }
 }
 
-.addCompany > img {
-  width: 300px;
-  height: 300px;
-  border: 2px solid red;
-  object-fit: contain;
+.main-container.blur {
+  filter: blur(5px);
+  transition: filter 0.3s ease;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1000;
+}
+
+.modal-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box; /* Include padding and border in width */
+}
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.complistadd {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 120px;
+}
+.complist,
+.compadd {
+  width: 200px;
+  height: 200px;
+  /* border: 5px solid red; */
+  padding: 60px;
+}
+
+.complist,
+.compadd:hover {
+  cursor: pointer;
 }

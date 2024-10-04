@@ -20,6 +20,7 @@ textarea {
   height: auto;
   margin: 0.5% 0 0 20%;
   padding: 20px;
+  background-color: white;
   /* border:2px solid black; */
 }
 
@@ -32,9 +33,12 @@ textarea {
 
   & .blackback {
     background: #000;
-    color: white;
     width: 10em;
-    margin-left: 25em;
+    margin-left: 22em;
+
+    & p {
+      color: white;
+    }
   }
   & p,
   h1,

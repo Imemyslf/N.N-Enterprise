@@ -1,15 +1,6 @@
 import "../styles/Billing.css";
 import { AddBill } from "../Components/Billing/AddBill";
-import { ShowBill } from "../Components/Billing/ShowBill";
 import { BillList } from "../Components/Billing/BillList";
-
-const BillingList = () => {
-  return (
-    <>
-      <ShowBill />
-    </>
-  );
-};
 
 const AddBilling = () => {
   return (
@@ -27,4 +18,4 @@ const SearchBilling = () => {
   );
 };
 
-export { BillingList, AddBilling, SearchBilling };
+export { AddBilling, SearchBilling };

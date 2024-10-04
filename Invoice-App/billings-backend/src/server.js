@@ -1,7 +1,9 @@
 import express from "express";
 import { db, connectToDb } from "./database.js";
 import cors from "cors";
-// import cron from "node-cron";
+import fs from "fs";
+import path from "path";
+import multer from "multer";
 
 const app = express();
 const port = 8000;
@@ -14,29 +16,59 @@ app.use(
   })
 );
 
-// cron.schedule("0 0 * * *", async () => {
-//   console.log("Running daily task to update daysLeft and remove expired bills");
-//   try {
-//     const response = await db
-//       .collection("billings")
-//       .updateMany({ daysLeft: { $gt: 0 } }, { $inc: { daysLeft: -1 } });
+if (!fs.existsSync("Invoice")) {
+  fs.mkdirSync("Invoice");
+}
 
-//     if (response.acknowledged) {
-//       console.log("Billings updated successfully daysLeft decremented");
-//     } else {
-//       console.log("Error in updating billings");
-//     }
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "Invoice/");
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname) || ".pdf";
+    cb(null, Date.now() + ext);
+  },
+});
 
-//     const result = await db.collection("billings").deleteMany({ daysLeft: 0 });
-//     if (result.acknowledged) {
-//       console.log("Bill deleted successfully ");
-//     } else {
-//       console.log("Error in deleting bills");
-//     }
-//   } catch (error) {
-//     console.error("Error during daily task execution:", error);
-//   }
-// });
+const upload = multer({ storage: storage });
+console.log("Inside");
+app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).send("No file Uploaded");
+    }
+
+    const filePath = req.file.path;
+    console.log("File uploaded successfully at  ", filePath);
+
+    const invoiceNos = req.file.innvoiceNos;
+
+    const invoiceInfo = await db
+      .collection("billings")
+      .findOne({ invoiceNos: parseInt(invoiceNos, 10) });
+    if (invoiceInfo) {
+      const result = await db
+        .collection("billings")
+        .updateOne(
+          { invoiceNos: parseInt(invoiceNos, 10) },
+          { $set: { invoicePaid: true } }
+        );
+      if (result.acknowledged) {
+        console.log("Invoice updated successfully");
+      } else {
+        console.log("Invoice updatedaion failed");
+      }
+    } else {
+      console.log("Invoice not found");
+      return res.status(404).send("Invoice not found");
+    }
+
+    res.status(200).send("Invoice updated and file uploaded successfully");
+  } catch (e) {
+    console.log(`Error message: \n ${e.message}`);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 //Company List Name(GET)
 app.get(`/api/company`, async (req, res) => {
@@ -229,7 +261,7 @@ app.delete("/api/materials/delete/:name", async (req, res) => {
 app.get(`/api/billings`, async (req, res) => {
   const billings = await db.collection("billings").find().toArray();
   if (billings.length > 0) {
-    console.log(billings);
+    // console.log(billings);
     res.send(billings);
   } else {
     res.sendStatus(404);
@@ -322,6 +354,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
     .toArray();
   const newInvoiceNos = lastBill.length ? lastBill[0].invoiceNos + 1 : 240001;
   const daysLeft = 365;
+  const invoicePaid = false;
 
   const { _id, name, ...restOfCompanyInfo } = companyInfo;
 
@@ -335,6 +368,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
     date,
     time,
     daysLeft,
+    invoicePaid,
   };
 
   console.log(`\n\nNewbill:- ${newBill}`);
@@ -383,15 +417,17 @@ app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
   }
 });
 
-app.put(`/api/billings/add`, async (req, res) => {
+app.put(`/api/billings/paid/:invoiceNos`, async (req, res) => {
+  const { invoiceNos } = req.params;
+  const new_invoice = parseInt(invoiceNos, 10);
   try {
     const response = await db
       .collection("billings")
-      .updateMany({}, { $set: { daysLeft: 365 } });
+      .updateOne({ invoiceNos: new_invoice }, { $set: { invoicePaid: true } });
 
     if (response.acknowledged) {
       console.log(response);
-      res.status(201).send(response);
+      res.status(200).send(response);
     } else {
       res.status(400).send({ message: "Error updating billings" });
     }
@@ -401,9 +437,43 @@ app.put(`/api/billings/add`, async (req, res) => {
   }
 });
 
+const deductDay = async () => {
+  try {
+    const response = await db.collection("billings").find().toArray();
+    if (response.length > 0) {
+      const currentDate = new Date();
+      for (const billInfo of response) {
+        const date = billInfo.date.split("/");
+        const old_date = new Date(date[2], date[1] - 1, date[0]);
+        const timeDiff = Math.floor(
+          (currentDate - old_date) / (1000 * 60 * 60 * 24)
+        );
+
+        const dayLeft = 365 - timeDiff;
+
+        if (timeDiff !== 365) {
+          await db
+            .collection("billings")
+            .updateOne(
+              { invoiceNos: billInfo.invoiceNos },
+              { $set: { daysLeft: dayLeft } }
+            );
+        } else {
+          await db
+            .collection("billings")
+            .deleteOne({ invoiceNos: billInfo.invoiceNos });
+        }
+        console.log(`${billInfo.invoiceNos}:- ${billInfo.daysLeft}`);
+      }
+    }
+  } catch (err) {
+    console.error(`Error: ${err}`);
+  }
+};
 //Checking db connect and server connection.
 connectToDb(() => {
   console.log("Successfully connected to Database");
+  deductDay();
   app.listen(port, () => {
     console.log(`listening on port ${port}`);
   });
