@@ -10,6 +10,8 @@ function DataInput({ copmanyBill }) {
     date: "",
   });
   console.log(`inside DataInput:- `, copmanyBill.companyName);
+
+  const company = `${copmanyBill.companyName}, ${copmanyBill.address}`;
   return (
     <>
       <div className="data-input">
@@ -24,11 +26,7 @@ function DataInput({ copmanyBill }) {
               name="Company"
               id="row1"
               rows={3}
-              value={
-                copmanyBill.companyName
-                  ? copmanyBill.companyName
-                  : companyNameBill
-              }
+              value={company ? company : companyNameBill}
               placeholder="Enter Company name"
               cols={27}
             ></textarea>

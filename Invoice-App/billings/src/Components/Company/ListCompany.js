@@ -7,6 +7,7 @@ export const ListCompany = () => {
   const [companyName, setCompanyName] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [sort, setSort] = useState(false);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -55,6 +56,25 @@ export const ListCompany = () => {
     setCompanyList([company]);
   };
 
+  const handleSort = async (type) => {
+    const method = sort ? "desc" : "asc";
+    setSort(!sort);
+
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/company/sort?methods=${type}&sorting=${method}`
+      );
+
+      if (response.data.length > 0) {
+        setCompanyList(response.data);
+      } else {
+        console.log(`Couldn't get the response`);
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
   return (
     <>
       <div className="search-comp">
@@ -91,10 +111,11 @@ export const ListCompany = () => {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Company Name</th>
-                  <th>GST Number</th>
-                  <th>Email</th>
-                  <th>State Code</th>
+                  <th onClick={() => handleSort("name")}>Company Name</th>
+                  <th onClick={() => handleSort("address")}>Company Address</th>
+                  <th onClick={() => handleSort("GSTNos")}>GST Number</th>
+                  <th onClick={() => handleSort("email")}>Email</th>
+                  <th onClick={() => handleSort("stateCode")}>State Code</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,6 +123,7 @@ export const ListCompany = () => {
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>{companyInfo.name}</td>
+                    <td>{companyInfo.address}</td>
                     <td>{companyInfo.GSTNos}</td>
                     <td>{companyInfo.email}</td>
                     <td>{companyInfo.stateCode}</td>

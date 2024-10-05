@@ -114,6 +114,41 @@ app.get(`/api/company`, async (req, res) => {
   }
 });
 
+app.get(`/api/company/sort`, async (req, res) => {
+  console.log(`inside sort`);
+  const { methods, sorting } = req.query; // Using req.query for query parameters
+  const sort = sorting === "asc" ? 1 : -1;
+
+  let type = "";
+
+  if (methods === "stateCode") {
+    type = "stateCode";
+  } else if (methods === "GSTNos") {
+    type = "GSTNos";
+  } else if (methods === "email") {
+    type = "email";
+  } else {
+    type = "name"; // default to name
+  }
+
+  try {
+    const billings = await db
+      .collection("company")
+      .find({})
+      .sort({ [type]: sort }) // Use [type] for dynamic field sorting
+      .toArray();
+
+    console.log(`billings:- \n`, billings);
+    if (billings.length > 0) {
+      res.send(billings);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+});
+
 //Specific Company Name Search(GET)
 app.get(`/api/company/search/:name`, async (req, res) => {
   let { name } = req.params;
@@ -139,10 +174,11 @@ app.get(`/api/company/search/:name`, async (req, res) => {
 
 //Insertion of Company(POST)
 app.post(`/api/company/insert`, async (req, res) => {
-  let { name, GSTNos, email, stateCode } = req.body;
-  console.log(name, GSTNos, email, stateCode);
+  let { name, address, GSTNos, email, stateCode } = req.body;
+  console.log(name, address, GSTNos, email, stateCode);
 
   name = name.trim();
+  address = address.trim();
   GSTNos = GSTNos.trim();
   email = email.trim();
   stateCode = parseInt(stateCode, 10);
@@ -152,7 +188,7 @@ app.post(`/api/company/insert`, async (req, res) => {
   if (response) {
     res.status(400).send(`Company already exists!!`);
   } else {
-    const newComp = { name, GSTNos, email, stateCode };
+    const newComp = { name, address, GSTNos, email, stateCode };
     const result = await db.collection("company").insertOne(newComp);
 
     if (result.acknowledged) {
@@ -313,7 +349,7 @@ app.get(`/api/billings/company/search/:companyName`, async (req, res) => {
     console.log(response);
     res.json(response);
   } else {
-    res.status(404).send(`Company ${name} is not found`);
+    res.status(404).send(`Company ${companyName} is not found`);
   }
 });
 
