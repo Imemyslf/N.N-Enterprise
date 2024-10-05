@@ -1,4 +1,3 @@
-/* General Container */
 .co-container {
   max-width: 800px;
   margin: 20px auto;
@@ -7,12 +6,13 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   background-color: #f9f9f9;
-  & h1 {
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
+}
+
+.co-container h1 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .search-comp {
@@ -80,121 +80,7 @@
 .autocomplete-suggestions li:hover {
   background-color: #f0f0f0;
 }
-/* 
- Autocomplete Suggestions 
-.autocomplete-suggestions {
-  position: absolute;
-  z-index: 1000;
-  width: 100%;
-  max-height: 200px;
-  overflow-y: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 5px;
-  list-style: none;
-  padding: 0;
-}
 
-.autocomplete-suggestions li {
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #eee;
-}
-
-.autocomplete-suggestions li:last-child {
-  border-bottom: none;
-}
-
-.autocomplete-suggestions li:hover {
-  background-color: #f0f0f0;
-} */
-
-/* Company List */
-/* .co-list {
-  margin-top: 20px;
-}
-
-.co-list div {
-  background-color: white;
-  padding: 15px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.co-list h2 {
-  font-size: 1.25rem;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.co-list h3 {
-  font-size: 1.15rem;
-  color: #555;
-  margin-bottom: 3px;
-}
-
-.co-list h4 {
-  font-size: 1rem;
-  color: #777;
-  margin-bottom: 3px;
-}
-
-.co-list h5 {
-  font-size: 0.95rem;
-  color: #999;
-  margin-bottom: 3px;
-}
-
-.co-list p {
-  font-size: 0.85rem;
-  color: #aaa;
-  margin-bottom: 5px;
-}
-
-/* Button Hover Effect 
-.co-list button {
-  padding: 8px 12px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.co-list button:hover {
-  background-color: #45a049;
-}
-
-/* Media Queries for Responsiveness 
-@media (max-width: 768px) {
-  .co-container {
-    padding: 15px;
-  }
-
-  .search input {
-    font-size: 14px;
-  }
-
-  .search button {
-    font-size: 14px;
-  }
-
-  .co-list h2 {
-    font-size: 1.1rem;
-  }
-
-  .co-list h3,
-  .co-list h4,
-  .co-list h5,
-  .co-list p {
-    font-size: 0.9rem;
-  }
-}
-*/
 .company-table {
   width: 100%;
   border-collapse: collapse;
