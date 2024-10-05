@@ -18,6 +18,7 @@ app.use(
 
 if (!fs.existsSync("Invoice")) {
   fs.mkdirSync("Invoice");
+  console.log("Invoice created successfully");
 }
 
 const storage = multer.diskStorage({
@@ -26,13 +27,40 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname) || ".pdf";
-    cb(null, Date.now() + ext);
+    console.log("File original name", file.originalname);
+    console.log("Date now + ext", file.originalname + ext);
+    cb(null, file.originalname + ext);
   },
 });
 
+const getNextInvoiceNos = async () => {
+  const counterDoc = await db
+    .collection("invoiceCounters")
+    .findOneAndUpdate(
+      { _id: "invoiceNos" },
+      { $inc: { sequence_value: 1 } },
+      { returnDocument: "after", upsert: true }
+    );
+
+  // Check if the document exists and has a sequence_value
+  if (!counterDoc.value || !counterDoc.value.sequence_value) {
+    // Initialize with a default starting number if not present
+    const newDoc = await db
+      .collection("invoiceCounters")
+      .findOneAndUpdate(
+        { _id: "invoiceNos" },
+        { $set: { sequence_value: 240001 } },
+        { returnDocument: "after", upsert: true }
+      );
+    return newDoc.value ? newDoc.value.sequence_value : 240001;
+  }
+
+  return counterDoc.value.sequence_value;
+};
+
 const upload = multer({ storage: storage });
-console.log("Inside");
 app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
+  console.log("Inside");
   try {
     if (!req.file) {
       return res.status(400).send("No file Uploaded");
@@ -41,22 +69,27 @@ app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
     const filePath = req.file.path;
     console.log("File uploaded successfully at  ", filePath);
 
-    const invoiceNos = req.file.innvoiceNos;
+    const invoiceNos = req.body.invoiceNos;
+    console.log("Inovoice Nos", invoiceNos);
 
     const invoiceInfo = await db
       .collection("billings")
       .findOne({ invoiceNos: parseInt(invoiceNos, 10) });
     if (invoiceInfo) {
-      const result = await db
-        .collection("billings")
-        .updateOne(
-          { invoiceNos: parseInt(invoiceNos, 10) },
-          { $set: { invoicePaid: true } }
-        );
-      if (result.acknowledged) {
-        console.log("Invoice updated successfully");
+      if (invoiceInfo.invoiceGenerated === true) {
+        console.log("Invoice Generated");
       } else {
-        console.log("Invoice updatedaion failed");
+        const result = await db
+          .collection("billings")
+          .updateOne(
+            { invoiceNos: parseInt(invoiceNos, 10) },
+            { $set: { invoiceGenerated: true } }
+          );
+        if (result.acknowledged) {
+          console.log("Invoice updated successfully");
+        } else {
+          console.log("Invoice updatedaion failed");
+        }
       }
     } else {
       console.log("Invoice not found");
@@ -345,16 +378,17 @@ app.post(`/api/billings/insert`, async (req, res) => {
     updatedMaterials.push({ ...restOfMaterials, kg: kg });
   }
 
-  console.log(`\n\nFinal updatedMaterials:- ${updatedMaterials}`);
+  console.log(`\n\nFinal updatedMaterials:- `, updatedMaterials);
   const lastBill = await db
     .collection("billings")
     .find()
     .sort({ invoiceNos: -1 })
     .limit(1)
     .toArray();
-  const newInvoiceNos = lastBill.length ? lastBill[0].invoiceNos + 1 : 240001;
+  // const newInvoiceNos = lastBill.length ? lastBill[0].invoiceNos + 1 : 240001;
+  const newInvoiceNos = await getNextInvoiceNos();
   const daysLeft = 365;
-  const invoicePaid = false;
+  const invoiceGenerated = false;
 
   const { _id, name, ...restOfCompanyInfo } = companyInfo;
 
@@ -368,7 +402,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
     date,
     time,
     daysLeft,
-    invoicePaid,
+    invoiceGenerated,
   };
 
   console.log(`\n\nNewbill:- ${newBill}`);
@@ -423,7 +457,10 @@ app.put(`/api/billings/paid/:invoiceNos`, async (req, res) => {
   try {
     const response = await db
       .collection("billings")
-      .updateOne({ invoiceNos: new_invoice }, { $set: { invoicePaid: true } });
+      .updateOne(
+        { invoiceNos: new_invoice },
+        { $set: { invoiceGenerated: true } }
+      );
 
     if (response.acknowledged) {
       console.log(response);
@@ -458,10 +495,14 @@ const deductDay = async () => {
               { invoiceNos: billInfo.invoiceNos },
               { $set: { daysLeft: dayLeft } }
             );
-        } else {
+        }
+
+        if (timeDiff === 0) {
           await db
             .collection("billings")
             .deleteOne({ invoiceNos: billInfo.invoiceNos });
+
+          console.log(`Invoice deleted: ${billInfo.invoiceNos}`);
         }
         console.log(`${billInfo.invoiceNos}:- ${billInfo.daysLeft}`);
       }
@@ -470,6 +511,7 @@ const deductDay = async () => {
     console.error(`Error: ${err}`);
   }
 };
+
 //Checking db connect and server connection.
 connectToDb(() => {
   console.log("Successfully connected to Database");
