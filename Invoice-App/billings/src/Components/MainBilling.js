@@ -31,8 +31,7 @@ function Main({ copmanyBill }) {
 
   cgstAmt = totalAmt * (2.5 / 100);
   sgstAmt = totalAmt * (2.5 / 100);
-  igstAmt = totalAmt * (5 / 100);
-  grandtotal = totalAmt + cgstAmt + sgstAmt + igstAmt;
+  grandtotal = totalAmt + cgstAmt + sgstAmt;
 
   return (
     <>
@@ -97,7 +96,7 @@ function Main({ copmanyBill }) {
             <p className="amtval-first">{totalAmt}</p>
             <p>{cgstAmt}</p>
             <p>{sgstAmt}</p>
-            <p>{igstAmt}</p>
+            <p></p>
             <p>{grandtotal}</p>
           </div>
           <div className="amtval">

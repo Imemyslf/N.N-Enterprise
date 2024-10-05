@@ -161,7 +161,7 @@ export const AddBill = () => {
         alert(
           `Result-Status: ${result.status}\n Bill Information Added successfully`
         );
-        navigate(`/billings/invoice/${billingDetails.companyName}`, {
+        navigate(`/billings/invoice`, {
           state: billingDetails,
         });
       } else {
