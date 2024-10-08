@@ -13,7 +13,7 @@ function ShowCompany({ onClose, navigate, title, route }) {
     <div className="modal-overlay">
       <div
         className="modal-content"
-        style={{ width: "600px", background: "white", borderRadius: "10px" }}
+        style={{ width: "30%", background: "white", borderRadius: "10px" }}
       >
         {/* Close button with icon */}
         <button className="close-button" onClick={onClose}>

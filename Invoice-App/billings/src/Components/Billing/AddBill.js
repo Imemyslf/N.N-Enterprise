@@ -34,9 +34,7 @@ export const AddBill = () => {
     }
 
     try {
-      const response = await axios.get(
-        `/api/company/search/${value}`
-      );
+      const response = await axios.get(`/api/company/search/${value}`);
 
       setSuggesttedCompanyName(response.data || []);
     } catch (e) {
@@ -52,7 +50,6 @@ export const AddBill = () => {
     }));
     setSuggesttedCompanyName([]);
     setSelectedCompany([company]);
-    alert("Selected company", selectedCompany[0]);
     console.log(`handleSelectCompany:-`, selectedCompany);
   };
 
@@ -80,9 +77,7 @@ export const AddBill = () => {
       }
 
       try {
-        const material = await axios.get(
-          `/api/materials/search/${name}`
-        );
+        const material = await axios.get(`/api/materials/search/${name}`);
 
         setSuggesttedMaterialName(material.data || []);
       } catch (e) {
@@ -141,10 +136,7 @@ export const AddBill = () => {
     });
 
     try {
-      const result = await axios.post(
-        `/api/billings/insert`,
-        billingDetails
-      );
+      const result = await axios.post(`/api/billings/insert`, billingDetails);
 
       if (result.status === 201) {
         let lastBill;

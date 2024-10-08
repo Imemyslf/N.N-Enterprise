@@ -38,9 +38,7 @@ export const ListMaterial = () => {
 
     if (name.length >= 1) {
       try {
-        const response = await axios.get(
-          `/api/materials/search/${name}`
-        );
+        const response = await axios.get(`/api/materials/search/${name}`);
         if (response.data) {
           setSuggestions(response.data);
           setMaterialList(response.data);
@@ -181,7 +179,7 @@ export const ListMaterial = () => {
                 </tbody>
               </table>
             ) : (
-              <p>No material found</p>
+              <p style={{ textAlign: "center" }}>No material found</p>
             )}
           </div>
         </div>

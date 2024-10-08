@@ -20,8 +20,15 @@ const NavBar = () => {
               }}
             />
           </div>
-          <h1 style={{ alignItem: "center" }}>Maya Traders</h1>
-          <div id="nav-bar">
+          <h1
+            style={{ alignItem: "center" }}
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Maya Traders
+          </h1>
+          {/* <div id="nav-bar">
             <div
               onClick={() => {
                 navigate("/");
@@ -43,7 +50,7 @@ const NavBar = () => {
             >
               <img src={AboutUS} alt="Contact-Us" />
             </div>
-          </div>
+          </div> */}
         </nav>
       </header>
     </>

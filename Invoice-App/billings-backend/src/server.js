@@ -15,6 +15,7 @@ const port = process.env.PORT || 8000;
 dotenv.config();
 app.use(express.json());
 
+console.log(process.env.USER_EMAIL);
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
