@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import Bank from "../Components/Banksign";
+import Bank from "./Banksign";
 
 function Main({ copmanyBill }) {
   const [companyMat, setCompanyMat] = useState([]);

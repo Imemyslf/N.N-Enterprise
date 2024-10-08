@@ -10,7 +10,7 @@ const AddBilling = () => {
   );
 };
 
-const SearchBilling = () => {
+const BillingList = () => {
   return (
     <>
       <BillList />
@@ -18,4 +18,4 @@ const SearchBilling = () => {
   );
 };
 
-export { AddBilling, SearchBilling };
+export { AddBilling, BillingList };

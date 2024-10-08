@@ -8,7 +8,6 @@ import MaterialInput from "./CompanyNameMate/SearchMaterial";
 import Buttons from "./CompanyNameMate/Buttons";
 import { useNavigate } from "react-router-dom";
 
-// Define AddBill component
 export const AddBill = () => {
   const [billingDetails, setBillingDetails] = useState({
     companyName: "",
@@ -19,9 +18,8 @@ export const AddBill = () => {
   const [suggesttedCompanyName, setSuggesttedCompanyName] = useState([]);
   const [suggesttedMaterialName, setSuggesttedMaterialName] = useState([]);
   const [selectedCompany, setSelectedCompany] = useState([]);
-  const [activeMaterialIndex, setActiveMaterialIndex] = useState(null); // Track active material input index
+  const [activeMaterialIndex, setActiveMaterialIndex] = useState(null);
 
-  // Handle change for company name input
   const handleCompany = async (e) => {
     const { value } = e.target;
     setBillingDetails((prevalue) => ({
@@ -37,7 +35,7 @@ export const AddBill = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/company/search/${value}`
+        `/api/company/search/${value}`
       );
 
       setSuggesttedCompanyName(response.data || []);
@@ -54,10 +52,10 @@ export const AddBill = () => {
     }));
     setSuggesttedCompanyName([]);
     setSelectedCompany([company]);
+    alert("Selected company", selectedCompany[0]);
     console.log(`handleSelectCompany:-`, selectedCompany);
   };
 
-  // Handle input for material name and kg (weight)
   const handleMaterialChange = async (index, field, e) => {
     const { value } = e.target;
     const newMaterials = [...billingDetails.companyMaterials];
@@ -70,24 +68,20 @@ export const AddBill = () => {
       companyMaterials: newMaterials,
     }));
 
-    // Set the active material index
     setActiveMaterialIndex(index);
 
-    // Handle suggestion clearing and fetching only for the material name
     if (field === "name") {
       const name = value.trim();
 
-      // Clear suggestions only if the input is empty
       if (name === "") {
         setSuggesttedMaterialName([]);
         console.log("Material suggestion cleared because input is empty");
         return;
       }
 
-      // Fetch material suggestions if input is not empty
       try {
         const material = await axios.get(
-          `http://localhost:8000/api/materials/search/${name}`
+          `/api/materials/search/${name}`
         );
 
         setSuggesttedMaterialName(material.data || []);
@@ -98,7 +92,6 @@ export const AddBill = () => {
     }
   };
 
-  // Add new material input fields
   const addMaterialInput = () => {
     setBillingDetails((prev) => ({
       ...prev,
@@ -106,14 +99,13 @@ export const AddBill = () => {
     }));
   };
 
-  // Remove material input from the array based on index
   const deleteMaterialInput = (index) => {
     const newMaterials = billingDetails.companyMaterials.filter(
-      (_, i) => i !== index // Filter out the material at the specified index
+      (_, i) => i !== index
     );
     setBillingDetails((prev) => ({
       ...prev,
-      companyMaterials: newMaterials, // Update the state with the new array after removal
+      companyMaterials: newMaterials,
     }));
   };
 
@@ -126,7 +118,6 @@ export const AddBill = () => {
       return;
     }
 
-    // Validate materials
     if (billingDetails.companyMaterials.length === 0) {
       alert("At least one material must be added.");
       return;
@@ -149,19 +140,26 @@ export const AddBill = () => {
       console.log(`Type of kg for material ${index}:`, typeof material.kg);
     });
 
-    // Try submitting the billing details to the server
     try {
       const result = await axios.post(
-        `http://localhost:8000/api/billings/insert`,
+        `/api/billings/insert`,
         billingDetails
       );
 
-      // Check if the submission was successful (status code 201)
       if (result.status === 201) {
+        let lastBill;
         alert(
           `Result-Status: ${result.status}\n Bill Information Added successfully`
         );
-        navigate(`/billings/invoice`, {
+        try {
+          const result = await axios.get(`/api/billings`);
+          console.log(`result:- `, result.data);
+          lastBill = result.data[result.data.length - 1];
+          console.log(`lastBill:`, lastBill);
+        } catch (err) {
+          console.log(err);
+        }
+        navigate(`/billings/invoice/${lastBill.invoiceNos}`, {
           state: billingDetails,
         });
       } else {
@@ -170,30 +168,25 @@ export const AddBill = () => {
         );
       }
     } catch (error) {
-      // Catch and handle any errors during the submission process
       console.error("Error adding billing details:", error);
       alert("Failed to add billing details. Please try again later.");
     }
   };
 
-  // Function to handle selecting a material from suggestions
   const selectMaterial = (material, index) => {
     console.log(`Selected material:`, material.name, `at index:`, index);
 
-    // Update only the specific material at the provided index
     const newMaterials = [...billingDetails.companyMaterials];
     newMaterials[index] = {
       ...newMaterials[index],
-      name: material.name, // Update the name field with the selected material name
+      name: material.name,
     };
 
-    // Update the state with the modified materials array
     setBillingDetails((prev) => ({
       ...prev,
       companyMaterials: newMaterials,
     }));
 
-    // Clear the material suggestions after selection
     setSuggesttedMaterialName([]);
     console.log(`Updated materials array:`, billingDetails.companyMaterials);
   };
