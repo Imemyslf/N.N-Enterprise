@@ -43,6 +43,11 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+app.get("/", (req, res) => {
+  res.send("Hello");
+});
+
 app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
   console.log("Inside");
   try {
