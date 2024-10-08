@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../../styles/Company/ListCompany.css";
+import UpdateIcon from "@mui/icons-material/Update";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export const ListCompany = () => {
+  const navigate = useNavigate();
   const [companyList, setCompanyList] = useState([]);
   const [updatedCompanyList, setUpdatedCompanyList] = useState([]);
   const [companyName, setCompanyName] = useState("");
@@ -12,7 +17,7 @@ export const ListCompany = () => {
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/api/company`);
+        const response = await axios.get(`/api/company`);
         if (response) {
           setCompanyList(response.data);
           setUpdatedCompanyList(response.data);
@@ -32,7 +37,7 @@ export const ListCompany = () => {
     if (name.length >= 1) {
       try {
         const response = await axios.get(
-          `http://localhost:8000/api/company/search/${name}`
+          `/api/company/search/${name}`
         );
         if (response.data) {
           setSuggestions(response.data);
@@ -51,6 +56,7 @@ export const ListCompany = () => {
 
   const handleSelectCompany = (company) => {
     setSelectedCompany(company);
+    console.log("Selected company", selectedCompany);
     setCompanyName("");
     setSuggestions([]);
     setCompanyList([company]);
@@ -62,7 +68,7 @@ export const ListCompany = () => {
 
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/company/sort?methods=${type}&sorting=${method}`
+        `/api/company/sort?methods=${type}&sorting=${method}`
       );
 
       if (response.data.length > 0) {
@@ -72,6 +78,34 @@ export const ListCompany = () => {
       }
     } catch (err) {
       console.log(err.message);
+    }
+  };
+
+  const handleUpdateCompany = (company, index) => {
+    console.log(company);
+    console.log(index);
+
+    navigate(`/company-form`, { state: company });
+  };
+
+  const handleDeleteCompany = async (companyName) => {
+    console.log("companyName at:-", companyName);
+
+    try {
+      const result = await axios.delete(
+        `/api/company/delete/${companyName}`
+      );
+
+      if (result.status === 200) {
+        const updatedList = companyList.filter(
+          (company) => company.name !== companyName
+        );
+
+        setCompanyList(updatedList);
+        setUpdatedCompanyList(updatedList);
+      }
+    } catch (err) {
+      console.log("Error:- ", err.message);
     }
   };
 
@@ -105,35 +139,60 @@ export const ListCompany = () => {
 
       <div className="co-container">
         <h1>Company List</h1>
-        <div className="company-table">
-          {companyList.length > 0 ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th onClick={() => handleSort("name")}>Company Name</th>
-                  <th onClick={() => handleSort("address")}>Company Address</th>
-                  <th onClick={() => handleSort("GSTNos")}>GST Number</th>
-                  <th onClick={() => handleSort("email")}>Email</th>
-                  <th onClick={() => handleSort("stateCode")}>State Code</th>
-                </tr>
-              </thead>
-              <tbody>
-                {companyList.map((companyInfo, index) => (
-                  <tr key={index}>
-                    <td>{index + 1}</td>
-                    <td>{companyInfo.name}</td>
-                    <td>{companyInfo.address}</td>
-                    <td>{companyInfo.GSTNos}</td>
-                    <td>{companyInfo.email}</td>
-                    <td>{companyInfo.stateCode}</td>
+        <div className="table-wrapper">
+          <div className="company-table">
+            {companyList.length > 0 ? (
+              <table>
+                <thead style={{ background: "blue !important" }}>
+                  <tr>
+                    <th>Sr No.</th>
+                    <th onClick={() => handleSort("name")}>Company Name</th>
+                    <th onClick={() => handleSort("address")}>
+                      Company Address
+                    </th>
+                    <th onClick={() => handleSort("GSTNos")}>GST Number</th>
+                    <th onClick={() => handleSort("email")}>Email</th>
+                    <th onClick={() => handleSort("stateCode")}>State Code</th>
+                    <th>Update/Delete</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p>No company found</p>
-          )}
+                </thead>
+                <tbody>
+                  {companyList.map((companyInfo, index) => (
+                    <tr key={index}>
+                      <td>{index + 1}</td>
+                      <td style={{ content: "editable" }}>
+                        {companyInfo.name}
+                      </td>
+                      <td>{companyInfo.address}</td>
+                      <td>{companyInfo.GSTNos}</td>
+                      <td>{companyInfo.email}</td>
+                      <td>{companyInfo.stateCode}</td>
+                      <td>
+                        <div className="update-delete">
+                          <div
+                            onClick={() =>
+                              handleUpdateCompany(companyInfo, index)
+                            }
+                          >
+                            <UpdateIcon />
+                          </div>
+                          <div
+                            onClick={() =>
+                              handleDeleteCompany(companyInfo.name)
+                            }
+                          >
+                            <DeleteIcon />
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="spacing">No company found</p>
+            )}
+          </div>
         </div>
       </div>
     </>

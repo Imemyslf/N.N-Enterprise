@@ -1,22 +1,21 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import checkmark from "../../assets/Images/checkmark.png";
+import "../../styles/Billing/ListBill.css";
 
 export const BillList = () => {
+  const navigate = useNavigate();
   const [billInfo, setBillInfo] = useState([]);
-  const [billStatus, setBillStatus] = useState(false);
 
   useEffect(() => {
     const showbills = async () => {
       try {
-        const repsonse = await axios.get(`http://localhost:8000/api/billings`);
+        const repsonse = await axios.get(`/api/billings`);
         const data = repsonse.data;
         console.log(data);
         if (data.length > 0) {
-          console.log(repsonse.data);
           setBillInfo(repsonse.data);
-          setBillStatus(true);
-        } else {
-          console.log(repsonse);
         }
       } catch (e) {
         console.log(e);
@@ -24,37 +23,79 @@ export const BillList = () => {
     };
     showbills();
   }, []);
+
   return (
     <>
-      <div className="co-container">
+      <div className="bills-container">
         <h1>Billing List</h1>
-        <div className="co-list">
-          {billInfo.length > 0 ? (
-            billInfo.map((billInfo, index) => (
-              <div key={index}>
-                <h2>Bill {index + 1}:-</h2>
-                <h4>Company Name:- {billInfo.companyName}</h4>
-                <h4>GST Nos:- {billInfo.GSTNos}</h4>
-                <h4>Email:- {billInfo.email}</h4>
-                <h4>State Code:- {billInfo.stateCode}</h4>
-                <h4>Invoice Number:- {billInfo.invoiceNos}</h4>
-                <h4>Materials: -</h4>
-                <ul>
-                  {billInfo.companyMaterials.map((material, index) => (
-                    <li key={index}>{material.name}</li>
+        <div className="table-wrapper">
+          <div className="billing-table">
+            {billInfo.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Sr No.</th>
+                    <th>Invoice Nos</th>
+                    <th>Company Name</th>
+                    <th>Company Address</th>
+                    <th>GST Number</th>
+                    <th>Email</th>
+                    <th>State Code</th>
+                    <th>Materials</th>
+                    <th>Rate/kg</th>
+                    <th>Kg</th>
+                    <th>Date & Time</th>
+                    <th>Invoice Generated</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {billInfo.map((bill, index) => (
+                    <tr
+                      key={index}
+                      onClick={() =>
+                        navigate(`/billings/invoice/${bill.invoiceNos}`)
+                      }
+                    >
+                      <td>{index + 1}</td>
+                      <td>{bill.invoiceNos}</td>
+                      <td>{bill.companyName}</td>
+                      <td>{bill.address}</td>
+                      <td>{bill.GSTNos}</td>
+                      <td>{bill.email}</td>
+                      <td>{bill.stateCode}</td>
+                      <td>
+                        {bill.companyMaterials.map((material, index) => (
+                          <p key={index}>{material.name}</p>
+                        ))}
+                      </td>
+                      <td>
+                        {bill.companyMaterials.map((material, index) => (
+                          <p key={index}>{material.rate}</p>
+                        ))}
+                      </td>
+                      <td>
+                        {bill.companyMaterials.map((material, index) => (
+                          <p key={index}>{material.kg}</p>
+                        ))}
+                      </td>
+                      <td>
+                        {bill.date}
+                        <br />
+                        {bill.time}
+                      </td>
+                      <td className="checkmark">
+                        {bill.invoiceGenerated && (
+                          <img src={checkmark} alt="right mark" />
+                        )}
+                      </td>
+                    </tr>
                   ))}
-                </ul>
-                <h4>Date:- {billInfo.date}</h4>
-                <h4>Time:- {billInfo.time}</h4>
-                <h4>Days Left:- {billInfo.daysLeft} days left</h4>
-                <h4>
-                  Invoice-Paid:- {billInfo.invoicePaid ? "Paid" : "Pending"}
-                </h4>
-              </div>
-            ))
-          ) : (
-            <p>No Bill found</p>
-          )}
+                </tbody>
+              </table>
+            ) : (
+              <p style={{ textAlign: "center" }}>No Bill found</p>
+            )}
+          </div>
         </div>
       </div>
     </>

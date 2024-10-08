@@ -10,36 +10,39 @@ const NavBar = () => {
   return (
     <>
       <header>
-        <div className="logo">
-          <img
-            src={OM_Logo}
-            alt="Om_logo"
-            onClick={() => {
-              navigate("/");
-            }}
-          />
-        </div>
-        <nav id="nav-bar">
-          <div
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            <img src={Home} alt="Contact-Us" />
+        <nav>
+          <div className="logo">
+            <img
+              src={OM_Logo}
+              alt="Om_logo"
+              onClick={() => {
+                navigate("/");
+              }}
+            />
           </div>
-          <div
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            <img src={ContactUs} alt="Contact-Us" />
-          </div>
-          <div
-            onClick={() => {
-              navigate("/");
-            }}
-          >
-            <img src={AboutUS} alt="Contact-Us" />
+          <h1 style={{ alignItem: "center" }}>Maya Traders</h1>
+          <div id="nav-bar">
+            <div
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              <img src={Home} alt="Contact-Us" />
+            </div>
+            <div
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              <img src={ContactUs} alt="Contact-Us" />
+            </div>
+            <div
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              <img src={AboutUS} alt="Contact-Us" />
+            </div>
           </div>
         </nav>
       </header>

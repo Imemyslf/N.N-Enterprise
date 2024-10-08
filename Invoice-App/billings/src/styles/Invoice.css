@@ -9,10 +9,10 @@ textarea {
   -webkit-resize: none; /* For Safari and Chrome */
   -moz-resize: none; /* For Firefox */
   /* border-radius:5px; */
-  outline: none;
+  /* outline: none; */
   padding: 0.3em;
   outline: none;
-  border: none;
+  /* border: none; */
 }
 
 .bill-container {
@@ -329,4 +329,37 @@ textarea {
     margin-left: 1em;
     margin-bottom: 0;
   }
+}
+
+.pdf {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.pdf button {
+  width: 180px;
+  font-weight: bold;
+  background-color: #00a2f3b3;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pdf button:hover {
+  background-color: #00a2f3;
+  transform: scale(1.05);
+}
+
+.pdf button:focus {
+  outline: none;
+}
+
+.pdf button:active {
+  transform: scale(0.95);
 }

@@ -4,15 +4,20 @@ import cors from "cors";
 import fs from "fs";
 import path from "path";
 import multer from "multer";
+import nodemailer from "nodemailer";
+import os from "os";
+import { ObjectId } from "mongodb";
+import dotenv from "dotenv";
 
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 
+dotenv.config();
 app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.CORS_ORIGIN,
   })
 );
 
@@ -32,31 +37,6 @@ const storage = multer.diskStorage({
     cb(null, file.originalname + ext);
   },
 });
-
-const getNextInvoiceNos = async () => {
-  const counterDoc = await db
-    .collection("invoiceCounters")
-    .findOneAndUpdate(
-      { _id: "invoiceNos" },
-      { $inc: { sequence_value: 1 } },
-      { returnDocument: "after", upsert: true }
-    );
-
-  // Check if the document exists and has a sequence_value
-  if (!counterDoc.value || !counterDoc.value.sequence_value) {
-    // Initialize with a default starting number if not present
-    const newDoc = await db
-      .collection("invoiceCounters")
-      .findOneAndUpdate(
-        { _id: "invoiceNos" },
-        { $set: { sequence_value: 240001 } },
-        { returnDocument: "after", upsert: true }
-      );
-    return newDoc.value ? newDoc.value.sequence_value : 240001;
-  }
-
-  return counterDoc.value.sequence_value;
-};
 
 const upload = multer({ storage: storage });
 app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
@@ -114,41 +94,6 @@ app.get(`/api/company`, async (req, res) => {
   }
 });
 
-app.get(`/api/company/sort`, async (req, res) => {
-  console.log(`inside sort`);
-  const { methods, sorting } = req.query; // Using req.query for query parameters
-  const sort = sorting === "asc" ? 1 : -1;
-
-  let type = "";
-
-  if (methods === "stateCode") {
-    type = "stateCode";
-  } else if (methods === "GSTNos") {
-    type = "GSTNos";
-  } else if (methods === "email") {
-    type = "email";
-  } else {
-    type = "name"; // default to name
-  }
-
-  try {
-    const billings = await db
-      .collection("company")
-      .find({})
-      .sort({ [type]: sort }) // Use [type] for dynamic field sorting
-      .toArray();
-
-    console.log(`billings:- \n`, billings);
-    if (billings.length > 0) {
-      res.send(billings);
-    } else {
-      res.sendStatus(404);
-    }
-  } catch (err) {
-    console.log(err.message);
-  }
-});
-
 //Specific Company Name Search(GET)
 app.get(`/api/company/search/:name`, async (req, res) => {
   let { name } = req.params;
@@ -157,7 +102,8 @@ app.get(`/api/company/search/:name`, async (req, res) => {
   try {
     const response = await db
       .collection("company")
-      .find({ name: { $regex: name, $options: "i" } })
+      // .find({ name: { $regex: name, $options: "i" } })
+      .find({ name: { $regex: name } })
       .toArray();
     console.log(`Company data found: ${JSON.stringify(response)}`);
     if (response.length > 0) {
@@ -190,7 +136,7 @@ app.post(`/api/company/insert`, async (req, res) => {
   } else {
     const newComp = { name, address, GSTNos, email, stateCode };
     const result = await db.collection("company").insertOne(newComp);
-
+    console.log(result);
     if (result.acknowledged) {
       console.log(result.acknowledged);
       console.log(`Successfully added`);
@@ -201,9 +147,56 @@ app.post(`/api/company/insert`, async (req, res) => {
   }
 });
 
-//deletion of speific company
+app.put(`/api/company/update`, async (req, res) => {
+  let { _id, name, address, GSTNos, email, stateCode } = req.body;
+  console.log(
+    "Before Update:- \n",
+    _id,
+    name,
+    address,
+    GSTNos,
+    email,
+    stateCode
+  );
+
+  console.log("Object id:- ", new ObjectId(_id));
+
+  if (!ObjectId.isValid(_id)) {
+    console.log("Invalid Id", id);
+    return res.status(400).send("Invalid company ID");
+  }
+
+  _id = new ObjectId(_id);
+  console.log("Object id:-", _id);
+  name = name.trim();
+  address = address.trim();
+  GSTNos = GSTNos.trim();
+  email = email.trim();
+  stateCode = parseInt(stateCode, 10);
+
+  try {
+    console.log("Inside try");
+    const update = await db
+      .collection("company")
+      .findOneAndUpdate(
+        { _id: _id },
+        { $set: { name, address, GSTNos, email, stateCode } },
+        { returnOriginal: true }
+      );
+    console.log(update);
+    if (update) {
+      console.log("After update:- \n", update);
+      res.status(200).json(update);
+    }
+  } catch (e) {
+    console.log("Error in server", e.message);
+  }
+});
+
+//Deletion of speific company
 app.delete("/api/company/delete/:name", async (req, res) => {
   const { name } = req.params;
+  console.log(`inside delete company:- `, name);
   try {
     const result = await db.collection("company").deleteOne({ name });
     if (result.deletedCount === 0) {
@@ -216,6 +209,7 @@ app.delete("/api/company/delete/:name", async (req, res) => {
   }
 });
 
+//Deletion of all Companies
 app.delete("/api/company/detele", async (req, res) => {
   try {
     const result = await db.collection("company").deleteMany({});
@@ -226,6 +220,42 @@ app.delete("/api/company/detele", async (req, res) => {
     res.status(200).send(result);
   } catch (err) {
     res.status(404).send(err);
+  }
+});
+
+//Sorting of Company List
+app.get(`/api/company/sort`, async (req, res) => {
+  console.log(`inside sort`);
+  const { methods, sorting } = req.query; // Using req.query for query parameters
+  const sort = sorting === "asc" ? 1 : -1;
+
+  let type = "";
+
+  if (methods === "stateCode") {
+    type = "stateCode";
+  } else if (methods === "GSTNos") {
+    type = "GSTNos";
+  } else if (methods === "email") {
+    type = "email";
+  } else {
+    type = "name"; // default to name
+  }
+
+  try {
+    const companies = await db
+      .collection("company")
+      .find({})
+      .sort({ [type]: sort }) // Use [type] for dynamic field sorting
+      .toArray();
+
+    console.log(`companies:- \n`, companies);
+    if (companies.length > 0) {
+      res.send(companies);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err) {
+    console.log(err.message);
   }
 });
 
@@ -297,6 +327,40 @@ app.post(`/api/materials/insert`, async (req, res) => {
   }
 });
 
+app.put(`/api/materials/update`, async (req, res) => {
+  let { _id, name, rate, kg } = req.body;
+  console.log("Before Update:- \n", _id, name, rate, kg);
+
+  console.log("Object id:- ", new ObjectId(_id));
+
+  if (!ObjectId.isValid(_id)) {
+    console.log("Invalid Id", id);
+    return res.status(400).send("Invalid company ID");
+  }
+
+  _id = new ObjectId(_id);
+  console.log("Object id:-", _id);
+  name = name.trim();
+
+  try {
+    console.log("Inside try");
+    const update = await db
+      .collection("materials")
+      .findOneAndUpdate(
+        { _id: _id },
+        { $set: { name, rate, kg } },
+        { returnOriginal: true }
+      );
+    console.log(update);
+    if (update) {
+      console.log("After update:- \n", update);
+      res.status(200).json(update);
+    }
+  } catch (e) {
+    console.log("Error in server", e.message);
+  }
+});
+
 //deletion of materials
 app.delete("/api/materials/delete", async (req, res) => {
   try {
@@ -323,6 +387,37 @@ app.delete("/api/materials/delete/:name", async (req, res) => {
     res.status(200).send(result);
   } catch (err) {
     res.status(404).send(err);
+  }
+});
+
+app.get(`/api/materials/sort`, async (req, res) => {
+  console.log(`inside sort`);
+  const { methods, sorting } = req.query; // Using req.query for query parameters
+  const sort = sorting === "asc" ? 1 : -1;
+
+  let type = "";
+
+  if (methods === "rate") {
+    type = "rate";
+  } else {
+    type = "name"; // default to name
+  }
+
+  try {
+    const materials = await db
+      .collection("materials")
+      .find({})
+      .sort({ [type]: sort }) // Use [type] for dynamic field sorting
+      .toArray();
+
+    console.log(`materials:- \n`, materials);
+    if (materials.length > 0) {
+      res.send(materials);
+    } else {
+      res.sendStatus(404);
+    }
+  } catch (err) {
+    console.log(err.message);
   }
 });
 
@@ -373,6 +468,18 @@ app.get(`/api/billings/invoice/search/:invoiceNos`, async (req, res) => {
   }
 });
 
+const getNextInvoiceNos = async () => {
+  const result = await db
+    .collection("counters")
+    .findOneAndUpdate(
+      { _id: "invoiceNos" },
+      { $inc: { seq: 1 } },
+      { returnOriginal: false }
+    );
+
+  return result.seq;
+};
+
 //Insertion Billings For The Companies(POST)
 app.post(`/api/billings/insert`, async (req, res) => {
   console.log("Request Body:", req.body);
@@ -394,7 +501,6 @@ app.post(`/api/billings/insert`, async (req, res) => {
     return res.status(400).send("Company does not exist");
   }
   console.log(companyInfo);
-  // const { GSTNos, email, stateCode } = companyInfo;
 
   const updatedMaterials = [];
   for (let i = 0; i < companyMaterials.length; i++) {
@@ -415,12 +521,12 @@ app.post(`/api/billings/insert`, async (req, res) => {
   }
 
   console.log(`\n\nFinal updatedMaterials:- `, updatedMaterials);
-  const lastBill = await db
-    .collection("billings")
-    .find()
-    .sort({ invoiceNos: -1 })
-    .limit(1)
-    .toArray();
+  // const lastBill = await db
+  //   .collection("billings")
+  //   .find()
+  //   .sort({ invoiceNos: -1 })
+  //   .limit(1)
+  //   .toArray();
   // const newInvoiceNos = lastBill.length ? lastBill[0].invoiceNos + 1 : 240001;
   const newInvoiceNos = await getNextInvoiceNos();
   const daysLeft = 365;
@@ -441,13 +547,13 @@ app.post(`/api/billings/insert`, async (req, res) => {
     invoiceGenerated,
   };
 
-  console.log(`\n\nNewbill:- ${newBill}`);
+  console.log(`\n\nNewbill:- `, newBill);
   try {
     const result = await db.collection("billings").insertOne(newBill);
     // console.log(`Result:- ${JSON.stringify(result, null, 2)}}`);
 
     if (result.acknowledged) {
-      console.log(result.acknowledged);
+      // console.log(result.acknowledged);
       res.status(201).send(newBill);
     } else {
       console.log(result.status);
@@ -488,6 +594,7 @@ app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
 });
 
 app.put(`/api/billings/paid/:invoiceNos`, async (req, res) => {
+  console.log("inside paid");
   const { invoiceNos } = req.params;
   const new_invoice = parseInt(invoiceNos, 10);
   try {
@@ -499,7 +606,7 @@ app.put(`/api/billings/paid/:invoiceNos`, async (req, res) => {
       );
 
     if (response.acknowledged) {
-      console.log(response);
+      console.log(`inside paid:-`, response);
       res.status(200).send(response);
     } else {
       res.status(400).send({ message: "Error updating billings" });
@@ -510,9 +617,65 @@ app.put(`/api/billings/paid/:invoiceNos`, async (req, res) => {
   }
 });
 
+const retrieveInvoice = async (invoiceFileName) => {
+  const homeDir = os.homedir();
+  const downloadsDir = path.join(homeDir, "Downloads");
+  const invoicePath = path.join(downloadsDir, invoiceFileName);
+
+  try {
+    // Check if the file exists
+    await fs.promises.access(invoicePath); // Use promises for cleaner async/await handling
+
+    console.log(`Invoice ${invoiceFileName} read successfully.`);
+
+    // Return the path instead of the buffer
+    return invoicePath;
+  } catch (error) {
+    console.error(`Error retrieving invoice: ${error.message}`);
+    return null;
+  }
+};
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true for port 465, false for other ports
+  auth: {
+    user: process.env.USER_EMAIL,
+    pass: process.env.USER_PASS,
+  },
+});
+
+app.get(`/api/sendMail`, async (req, res) => {
+  const { email, invoice } = req.query;
+  console.log(email, invoice);
+
+  const file = await retrieveInvoice(`${invoice}.pdf`);
+
+  if (file) {
+    console.log("File found");
+  }
+
+  const mailOptions = {
+    from: process.env.USER_EMAIL,
+    to: email,
+    subject: "Invoice",
+    attachments: [{ filename: `${invoice}.pdf`, path: file }],
+  };
+
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("Sent mail successfully");
+      res.status(200).send(`Email received ${email}`);
+    }
+  });
+});
+
 const deductDay = async () => {
   try {
-    const response = await db.collection("billings").find().toArray();
+    const response = await db.collection("billings").find({}).toArray();
     if (response.length > 0) {
       const currentDate = new Date();
       for (const billInfo of response) {
@@ -524,7 +687,7 @@ const deductDay = async () => {
 
         const dayLeft = 365 - timeDiff;
 
-        if (timeDiff !== 365) {
+        if (timeDiff <= 365) {
           await db
             .collection("billings")
             .updateOne(
@@ -533,7 +696,7 @@ const deductDay = async () => {
             );
         }
 
-        if (timeDiff === 0) {
+        if (billInfo.daysLeft === 0) {
           await db
             .collection("billings")
             .deleteOne({ invoiceNos: billInfo.invoiceNos });

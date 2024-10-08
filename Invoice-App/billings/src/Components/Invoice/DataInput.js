@@ -9,9 +9,19 @@ function DataInput({ copmanyBill }) {
     dueDate: "",
     date: "",
   });
+
   console.log(`inside DataInput:- `, copmanyBill.companyName);
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setCompanyDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value, // dynamically update the property based on input name
+    }));
+  };
+
   const company = `${copmanyBill.companyName}, ${copmanyBill.address}`;
+
   return (
     <>
       <div className="data-input">
@@ -21,16 +31,7 @@ function DataInput({ copmanyBill }) {
               M/s
             </label>
           </div>
-          <div className="ta">
-            <textarea
-              name="Company"
-              id="row1"
-              rows={3}
-              value={company ? company : companyNameBill}
-              placeholder="Enter Company name"
-              cols={27}
-            ></textarea>
-          </div>
+          <div style={{ marginTop: "15px" }}>{company}</div>
         </div>
         <div className="extra-input">
           <div className="labels1">
@@ -54,39 +55,54 @@ function DataInput({ copmanyBill }) {
           </div>
           <div className="inputs1">
             <div>
-              <input type="text" size={15} value={copmanyBill.invoiceNos} />
+              <input
+                type="text"
+                style={{ paddingLeft: "5px" }}
+                size={15}
+                value={copmanyBill.invoiceNos}
+                readOnly // Assuming this is not editable
+              />
             </div>
             <div>
               <input
+                style={{ paddingLeft: "5px" }}
                 type="text"
                 size={15}
+                name="orderNos"
                 value={
                   copmanyBill.orderNos
                     ? copmanyBill.orderNos
                     : compnayDetails.orderNos
                 }
+                onChange={handleInputChange}
               />
             </div>
             <div>
               <input
+                style={{ paddingLeft: "5px" }}
                 type="text"
                 size={15}
+                name="vehicleNos"
                 value={
                   copmanyBill.vehicleNos
                     ? copmanyBill.vehicleNos
                     : compnayDetails.vehicleNos
                 }
+                onChange={handleInputChange}
               />
             </div>
             <div>
               <input
+                style={{ paddingLeft: "5px" }}
                 type="text"
                 size={15}
+                name="dueDate"
                 value={
                   copmanyBill.dueDate
                     ? copmanyBill.dueDate
                     : compnayDetails.dueDate
                 }
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -98,11 +114,14 @@ function DataInput({ copmanyBill }) {
           <div className="inputs2">
             <div>
               <input
+                style={{ paddingLeft: "5px" }}
                 type="text"
                 size={10}
+                name="date"
                 value={
                   copmanyBill.date ? copmanyBill.date : compnayDetails.date
                 }
+                onChange={handleInputChange}
               />
             </div>
           </div>

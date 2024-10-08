@@ -3,16 +3,13 @@
   max-width: 800px;
   margin: 20px auto;
   padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
-  & h1 {
-    font-size: 2rem;
-    text-align: center;
-    margin-bottom: 20px;
-    color: #333;
-  }
+}
+
+.mat-container h1 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .search-mat {
@@ -84,9 +81,13 @@
 .material-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
   font-size: 1em;
   font-family: "Arial", sans-serif;
+}
+
+.table-wrapper {
+  overflow: hidden;
+  border-radius: 20px 20px 10px 10px;
 }
 
 .material-table table {
@@ -102,11 +103,12 @@
 }
 
 .material-table th {
-  background-color: #f2f2f2;
+  background-color: #000000af;
   font-weight: bold;
+  color: white;
 }
 
-.material-table tr:nth-child(even) {
+.material-table tr {
   background-color: #f9f9f9;
 }
 

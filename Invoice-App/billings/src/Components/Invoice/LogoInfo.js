@@ -1,5 +1,5 @@
 import React from "react";
-import Om_logo from "../assets/Images/OmLogo.png";
+import Om_logo from "../../assets/Images/OmLogo.png";
 
 function LogoInfo() {
   return (

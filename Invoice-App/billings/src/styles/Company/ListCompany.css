@@ -1,11 +1,7 @@
 .co-container {
-  max-width: 800px;
+  max-width: 100%;
   margin: 20px auto;
   padding: 20px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
 }
 
 .co-container h1 {
@@ -58,7 +54,7 @@
 
 .autocomplete-suggestions {
   list-style: none;
-  margin: 10px 0 0;
+  /* margin: 1px 0 0; */
   padding: 0;
   position: absolute;
   top: 100%;
@@ -81,10 +77,14 @@
   background-color: #f0f0f0;
 }
 
+.table-wrapper {
+  overflow: hidden;
+  border-radius: 20px 20px 10px 10px;
+}
+
 .company-table {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
   font-size: 1em;
   font-family: "Arial", sans-serif;
 }
@@ -102,14 +102,35 @@
 }
 
 .company-table th {
-  background-color: #f2f2f2;
+  background-color: #000000af;
   font-weight: bold;
+  color: white;
 }
 
-.company-table tr:nth-child(even) {
+.company-table tr {
   background-color: #f9f9f9;
 }
 
 .company-table tr:hover {
   background-color: #f1f1f1;
+}
+
+.spacing {
+  text-align: center;
+}
+
+.update-delete {
+  display: flex;
+  justify-content: space-evenly;
+  font-size: 30px;
+}
+
+.update-delete div:first-child:hover {
+  cursor: pointer;
+  color: rgb(60, 166, 201);
+}
+
+.update-delete div:last-child:hover {
+  cursor: pointer;
+  color: red;
 }

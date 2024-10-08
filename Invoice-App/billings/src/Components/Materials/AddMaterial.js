@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Form, Row, Col } from "react-bootstrap";
 import axios from "axios";
 
 export const AddMaterial = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const material = location.state;
+
   const [materialName, setMaterialName] = useState("");
   const [materialRate, setMaterialRate] = useState("");
   const [materialKg, setMaterialKgs] = useState("");
+  const [updateMaterial, setUpdatedMaterial] = useState(false);
   const [validated, setValidated] = useState(false);
 
   // const handleSubmitt = (event) => {
@@ -18,6 +24,15 @@ export const AddMaterial = () => {
   //   setValidated(true);
   // };
 
+  useEffect(() => {
+    if (material) {
+      setMaterialName(material.name);
+      setMaterialRate(material.rate);
+      setMaterialKgs(material.kg);
+      setUpdatedMaterial(true);
+    }
+  }, []);
+
   const handleSubmit = async () => {
     try {
       const inputs = {
@@ -27,7 +42,7 @@ export const AddMaterial = () => {
       };
 
       const result = await axios.post(
-        `http://localhost:8000/api/materials/insert`,
+        `/api/materials/insert`,
         inputs
       );
 
@@ -40,6 +55,34 @@ export const AddMaterial = () => {
       console.error("Error submitting data:", err);
     }
   };
+
+  const handleUpdate = async () => {
+    console.log(material._id);
+
+    try {
+      const inputs = {
+        _id: material._id,
+        name: materialName,
+        rate: materialRate,
+        kg: materialKg,
+      };
+
+      const updatedList = await axios.put(
+        `/api/materials/update`,
+        inputs
+      );
+
+      if (updatedList.status === 200) {
+        alert("Material Updated Successfully");
+        navigate(`/materials`);
+      } else {
+        alert("Error while updating materials");
+      }
+    } catch (err) {
+      console.log("Error is server:- ", err);
+    }
+  };
+
   return (
     <>
       <Form className="form-container" noValidate validated={validated}>
@@ -79,9 +122,15 @@ export const AddMaterial = () => {
           </Form.Group>
         </Row>
 
-        <Button variant="primary" onClick={handleSubmit}>
-          SUBMIT
-        </Button>
+        {updateMaterial ? (
+          <Button variant="primary" onClick={handleUpdate}>
+            UPDATE
+          </Button>
+        ) : (
+          <Button variant="primary" onClick={handleSubmit}>
+            SUBMIT
+          </Button>
+        )}
       </Form>
     </>
   );

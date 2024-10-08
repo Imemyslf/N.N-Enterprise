@@ -16,19 +16,16 @@
   border: 2px solid black;
   border-radius: 10px;
   padding: 10px;
-  /* background: #71edf17e; */
+}
 
-  & h1 {
-    margin: 0.2em 3em;
-    /* border: 5px solid black; */
-    text-align: center;
-    color: #3e8fda;
-  }
+.billing-form h1 {
+  margin: 0.2em 3em;
+  text-align: center;
+  color: #3e8fda;
 }
 
 form {
   margin: 10px;
-  /* border: 5px solid red; */
   padding: 10px;
 
   & label {
@@ -49,15 +46,11 @@ form {
   display: flex;
   justify-content: space-between;
   flex: 1;
-  /* border: 5px solid green; */
   padding: 10px;
 
   & button {
     height: 40px;
-    /* padding: 10px ; */
-    /* border: 5px solid green; */
     margin-top: 25px;
-    /* text-align: center; */
     border-radius: 10px;
     width: 80px;
     padding: 1px;
@@ -68,7 +61,6 @@ form {
 }
 
 .center-btn {
-  /* border: 5px solid orangered; */
   display: grid;
   grid-template-columns: 1fr 1fr;
 
