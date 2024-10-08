@@ -1,5 +1,5 @@
 // MaterialInput.js
-import { Row, Col, Form, Button } from "react-bootstrap";
+import { Row, Col, Form, Button } from "react-bootstrap"; // Ensure you have this CSS file for custom styles.
 
 const MaterialInput = (props) => {
   return (
@@ -14,6 +14,25 @@ const MaterialInput = (props) => {
           onChange={(e) => props.handleMaterialChange(props.index, "name", e)} // Track the index
           required
         />
+        {props.activeMaterialIndex === props.index &&
+          props.suggesttedMaterialName.length > 0 && (
+            <div className="suggestion-container">
+              <ul className="suggestion-list">
+                {props.suggesttedMaterialName
+                  .slice(0, 5)
+                  .map((materialSuggestion, suggestionIndex) => (
+                    <li
+                      key={suggestionIndex}
+                      onClick={() =>
+                        props.selectMaterial(materialSuggestion, props.index)
+                      }
+                    >
+                      {materialSuggestion.name}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
       </Form.Group>
 
       <Form.Group as={Col} sm="5">
@@ -36,25 +55,6 @@ const MaterialInput = (props) => {
           DELETE
         </Button>
       </Form.Group>
-
-      {/* Show suggestions only for the active material index */}
-      {props.activeMaterialIndex === props.index &&
-        props.suggesttedMaterialName.length > 0 && (
-          <ul>
-            {props.suggesttedMaterialName.map(
-              (materialSuggestion, suggestionIndex) => (
-                <li
-                  key={suggestionIndex}
-                  onClick={() =>
-                    props.selectMaterial(materialSuggestion, props.index)
-                  } // Pass the index to update the correct entry
-                >
-                  {materialSuggestion.name}
-                </li>
-              )
-            )}
-          </ul>
-        )}
     </Row>
   );
 };

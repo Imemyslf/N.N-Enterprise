@@ -80,6 +80,13 @@ export const ListMaterial = () => {
     }
   };
 
+  const deleteMaterials = async () => {
+    try {
+      await axios.delete(`/api/materials/delete`);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const handleUpdateMaterial = (material, index) => {
     console.log(material);
     console.log(index);
@@ -137,7 +144,7 @@ export const ListMaterial = () => {
       </div>
 
       <div className="mat-container">
-        <h1>Material List</h1>
+        <h1 onClick={() => deleteMaterials()}>Material List</h1>
         <div className="table-wrapper">
           <div className="material-table">
             {materialList.length > 0 ? (

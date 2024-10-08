@@ -10,7 +10,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 export const Invoice = () => {
   let { invoice } = useParams();
-  invoice = parseInt(invoice, 10);
+
   console.log(`invoice:- `, invoice);
   console.log(`invoice:- `, typeof invoice);
   const [LastBill, setLastBill] = useState({});

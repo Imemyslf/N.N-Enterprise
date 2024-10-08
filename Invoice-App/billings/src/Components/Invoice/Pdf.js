@@ -33,18 +33,6 @@ const downloadPDF = async (pdfRef, LastBill) => {
     const blobFile = pdf.output("blob");
     const blobUrl = URL.createObjectURL(blobFile);
 
-    // Create an anchor element and trigger the download
-    const link = document.createElement("a");
-    link.href = blobUrl;
-    link.download = `${LastBill.invoiceNos}.pdf`; // Use LastBill.invoiceNos as the filename
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Clean up URL object
-    URL.revokeObjectURL(blobUrl);
-
-    // Uploading the PDF to the server
     const formData = new FormData();
     formData.append("file", blobFile, `${LastBill.invoiceNos}`);
     formData.append("invoiceNos", LastBill.invoiceNos);
@@ -69,6 +57,7 @@ const downloadPDF = async (pdfRef, LastBill) => {
 
         if (result) {
           console.log("success", JSON.stringify(result));
+          alert(`${result.message}\nPath:- {result.path}`);
         }
       } catch (err) {
         console.log("error message:-", err);

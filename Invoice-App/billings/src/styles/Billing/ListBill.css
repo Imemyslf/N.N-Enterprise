@@ -1,6 +1,6 @@
 /* Container and Table Styling */
 .bills-container {
-  width: 90%;
+  width: 100%;
   margin: 20px auto;
   padding: 20px;
 }
@@ -77,4 +77,9 @@
   .billing-table td {
     padding: 8px;
   }
+}
+
+.delete-btn div:hover {
+  color: red;
+  cursor: pointer;
 }

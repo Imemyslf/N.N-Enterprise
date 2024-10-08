@@ -36,9 +36,7 @@ export const ListCompany = () => {
 
     if (name.length >= 1) {
       try {
-        const response = await axios.get(
-          `/api/company/search/${name}`
-        );
+        const response = await axios.get(`/api/company/search/${name}`);
         if (response.data) {
           setSuggestions(response.data);
           setCompanyList(response.data);
@@ -81,6 +79,13 @@ export const ListCompany = () => {
     }
   };
 
+  const deleteCompanies = async () => {
+    try {
+      await axios.delete(`/api/company/delete`);
+    } catch (e) {
+      console.log(e);
+    }
+  };
   const handleUpdateCompany = (company, index) => {
     console.log(company);
     console.log(index);
@@ -92,9 +97,7 @@ export const ListCompany = () => {
     console.log("companyName at:-", companyName);
 
     try {
-      const result = await axios.delete(
-        `/api/company/delete/${companyName}`
-      );
+      const result = await axios.delete(`/api/company/delete/${companyName}`);
 
       if (result.status === 200) {
         const updatedList = companyList.filter(
@@ -138,7 +141,7 @@ export const ListCompany = () => {
       </div>
 
       <div className="co-container">
-        <h1>Company List</h1>
+        <h1 onClick={() => deleteCompanies()}>Company List</h1>
         <div className="table-wrapper">
           <div className="company-table">
             {companyList.length > 0 ? (
