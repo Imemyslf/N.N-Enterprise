@@ -8,6 +8,7 @@ import nodemailer from "nodemailer";
 import os from "os";
 import { ObjectId } from "mongodb";
 import dotenv from "dotenv";
+import downloadsFolder from "downloads-folder";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -15,21 +16,23 @@ const port = process.env.PORT || 8000;
 dotenv.config();
 app.use(express.json());
 
-console.log(process.env.USER_EMAIL);
+// console.log(process.env.USER_EMAIL);
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
   })
 );
 
-if (!fs.existsSync("Invoice")) {
-  fs.mkdirSync("Invoice");
-  console.log("Invoice created successfully");
+const dirPDF = path.join(path.join(os.homedir(), "Downloads"), "Invoice");
+
+if (!fs.existsSync(dirPDF)) {
+  fs.mkdirSync(dirPDF, { recursive: true }); // Ensures that nested directories are created
+  console.log("Invoice directory created successfully at", dirPDF);
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "Invoice/");
+    cb(null, dirPDF);
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname) || ".pdf";
@@ -55,15 +58,16 @@ app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
 
     const invoiceInfo = await db
       .collection("billings")
-      .findOne({ invoiceNos: parseInt(invoiceNos, 10) });
+      .findOne({ invoiceNos: invoiceNos });
     if (invoiceInfo) {
       if (invoiceInfo.invoiceGenerated === true) {
         console.log("Invoice Generated");
+        res.status(200).send({ message: "Invoice Already Generated" });
       } else {
         const result = await db
           .collection("billings")
           .updateOne(
-            { invoiceNos: parseInt(invoiceNos, 10) },
+            { invoiceNos: invoiceNos },
             { $set: { invoiceGenerated: true } }
           );
         if (result.acknowledged) {
@@ -80,7 +84,7 @@ app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
     res.status(200).send("Invoice updated and file uploaded successfully");
   } catch (e) {
     console.log(`Error message: \n ${e.message}`);
-    res.status(500).send("Internal Server Error");
+    res.status(500).send("Interna Server Error");
   }
 });
 
@@ -424,7 +428,7 @@ app.get(`/api/materials/sort`, async (req, res) => {
 
 //Billing List Name(GET)
 app.get(`/api/billings`, async (req, res) => {
-  const billings = await db.collection("billings").find().toArray();
+  const billings = await db.collection("billings").find({}).toArray();
   if (billings.length > 0) {
     // console.log(billings);
     res.send(billings);
@@ -433,31 +437,10 @@ app.get(`/api/billings`, async (req, res) => {
   }
 });
 
-//Specific Comapny Billing Search(GET)
-app.get(`/api/billings/company/search/:companyName`, async (req, res) => {
-  let { companyName } = req.params;
-
-  companyName = companyName.trim();
-
-  const response = await db.collection("billings").findOne({ companyName });
-
-  if (response) {
-    console.log(response);
-    res.json(response);
-  } else {
-    res.status(404).send(`Company ${companyName} is not found`);
-  }
-});
-
 //Specific Invoice Billing Search(GET)
 app.get(`/api/billings/invoice/search/:invoiceNos`, async (req, res) => {
   let { invoiceNos } = req.params;
-  invoiceNos = parseInt(invoiceNos, 10);
   console.log(`invoiceNos;- ${invoiceNos}`);
-
-  if (isNaN(invoiceNos)) {
-    return res.status(400).send("Invalid invoice number");
-  }
 
   const response = await db.collection("billings").findOne({ invoiceNos });
 
@@ -501,7 +484,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
     console.log(` Companyinfo failed:- ${companyInfo}`);
     return res.status(400).send("Company does not exist");
   }
-  console.log(companyInfo);
+  console.log(`Company info insdie insert`, companyInfo);
 
   const updatedMaterials = [];
   for (let i = 0; i < companyMaterials.length; i++) {
@@ -512,7 +495,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
     const material = await db
       .collection("materials")
       .findOne({ name: { $regex: new RegExp(name, "i") } });
-    console.log(material);
+    console.log(`Materials inside insert`, material);
     if (!material) {
       return res.status(400).send(`Material ${name} does not exist`);
     }
@@ -522,13 +505,6 @@ app.post(`/api/billings/insert`, async (req, res) => {
   }
 
   console.log(`\n\nFinal updatedMaterials:- `, updatedMaterials);
-  // const lastBill = await db
-  //   .collection("billings")
-  //   .find()
-  //   .sort({ invoiceNos: -1 })
-  //   .limit(1)
-  //   .toArray();
-  // const newInvoiceNos = lastBill.length ? lastBill[0].invoiceNos + 1 : 240001;
   const newInvoiceNos = await getNextInvoiceNos();
   const daysLeft = 365;
   const invoiceGenerated = false;
@@ -538,7 +514,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
   const date = new Date().toLocaleDateString();
   const time = new Date().toLocaleTimeString();
   const newBill = {
-    invoiceNos: newInvoiceNos,
+    invoiceNos: newInvoiceNos.toString(),
     companyName,
     ...restOfCompanyInfo,
     companyMaterials: updatedMaterials,
@@ -566,11 +542,18 @@ app.post(`/api/billings/insert`, async (req, res) => {
   }
 });
 
-app.delete("/api/billings/delete", async (req, res) => {
+app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
+  const { invoiceNos } = req.params;
+  console.log(`invoice nos inside delete:- `, invoiceNos);
   try {
-    const result = await db.collection("billings").deleteMany({});
+    const result = await db
+      .collection("billings")
+      .deleteOne({ invoiceNos: invoiceNos });
+
+    console.log(`result after deletion`, result);
+
     if (result.deletedCount === 0) {
-      res.status(200).send({ message: "No documents to be deleted" });
+      res.status(200).json();
     }
 
     res.status(200).send(result);
@@ -579,11 +562,9 @@ app.delete("/api/billings/delete", async (req, res) => {
   }
 });
 
-app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
-  let { invoiceNos } = req.params;
-  invoiceNos = parseInt(invoiceNos, 10);
+app.delete("/api/billings/detele", async (req, res) => {
   try {
-    const result = await db.collection("billings").deleteOne({ invoiceNos });
+    const result = await db.collection("billings").deleteMany({});
     if (result.deletedCount === 0) {
       res.status(200).send({ message: "No documents to be deleted" });
     }
@@ -597,12 +578,12 @@ app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
 app.put(`/api/billings/paid/:invoiceNos`, async (req, res) => {
   console.log("inside paid");
   const { invoiceNos } = req.params;
-  const new_invoice = parseInt(invoiceNos, 10);
+  // const new_invoice = parseInt(invoiceNos, 10);
   try {
     const response = await db
       .collection("billings")
       .updateOne(
-        { invoiceNos: new_invoice },
+        { invoiceNos: invoiceNos },
         { $set: { invoiceGenerated: true } }
       );
 
