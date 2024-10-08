@@ -57,7 +57,7 @@ const downloadPDF = async (pdfRef, LastBill) => {
 
         if (result) {
           console.log("success", JSON.stringify(result));
-          alert(`${result.message}\nPath:- {result.path}`);
+          alert(`Mail sent successfully`);
         }
       } catch (err) {
         console.log("error message:-", err);
