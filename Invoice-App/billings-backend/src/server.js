@@ -548,7 +548,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
 });
 
 app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
-  const { invoiceNos } = req.params;
+  let { invoiceNos } = req.params;
   console.log(`invoice nos inside delete:- `, invoiceNos);
   try {
     const result = await db
@@ -558,9 +558,9 @@ app.delete("/api/billings/delete/:invoiceNos", async (req, res) => {
     console.log(`result after deletion`, result);
 
     if (result.deletedCount === 0) {
-      res.status(200).json();
+      return res.status(200).send(result);
     }
-
+    console.log("Deleted successfully");
     res.status(200).send(result);
   } catch (err) {
     res.status(404).send(err);
@@ -605,15 +605,19 @@ app.put(`/api/billings/paid/:invoiceNos`, async (req, res) => {
 });
 
 const retrieveInvoice = async (invoiceFileName) => {
-  const homeDir = os.homedir();
-  const downloadsDir = path.join(homeDir, "Downloads");
-  const invoicePath = path.join(downloadsDir, invoiceFileName);
+  // const homeDir = os.homedir();
+  // const downloadsDir = path.join(homeDir, "Downloads", "Invoice");
+  const invoicePath = path.join(dirPDF, invoiceFileName);
 
   try {
     // Check if the file exists
-    await fs.promises.access(invoicePath); // Use promises for cleaner async/await handling
+    const result = await fs.promises.access(invoicePath); // Use promises for cleaner async/await handling
 
-    console.log(`Invoice ${invoiceFileName} read successfully.`);
+    if (result) {
+      console.log(`Invoice ${invoiceFileName} read successfully.`);
+    } else {
+      console.log(`Invoice ${invoiceFileName} read not  successfully.`);
+    }
 
     // Return the path instead of the buffer
     return invoicePath;
