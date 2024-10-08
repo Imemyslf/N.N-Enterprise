@@ -62,7 +62,7 @@ app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
     if (invoiceInfo) {
       if (invoiceInfo.invoiceGenerated === true) {
         console.log("Invoice Generated");
-        res.status(200).send({ message: "Invoice Already Generated" });
+        return res.status(200).send({ message: "Invoice Already Generated" });
       } else {
         const result = await db
           .collection("billings")
@@ -72,8 +72,13 @@ app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
           );
         if (result.acknowledged) {
           console.log("Invoice updated successfully");
+          return res.status(200).send({
+            message: "Invoice Genrated Successfully",
+            path: "DownloadsInvoice",
+          });
         } else {
           console.log("Invoice updatedaion failed");
+          return res.status(500).send("Invoice update failed");
         }
       }
     } else {

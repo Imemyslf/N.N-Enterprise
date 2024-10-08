@@ -1,4 +1,6 @@
+// CompanyInput.js
 import { Form, Row, Col } from "react-bootstrap";
+// import "../../styles/Company/Company.css"; // Ensure you have this CSS file for custom styles.
 
 const CompanyInput = (props) => {
   return (
@@ -14,13 +16,15 @@ const CompanyInput = (props) => {
             required
           />
           {props.suggestcompany.length > 0 && (
-            <ul>
-              {props.suggestcompany.map((company, index) => (
-                <li key={index} onClick={() => props.selectcompany(company)}>
-                  {company.name}
-                </li>
-              ))}
-            </ul>
+            <div className="suggestion-container">
+              <ul className="suggestion-list">
+                {props.suggestcompany.slice(0, 5).map((company, index) => (
+                  <li key={index} onClick={() => props.selectcompany(company)}>
+                    {company.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </Col>
       </Row>
