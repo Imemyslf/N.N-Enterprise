@@ -711,7 +711,7 @@ const deductDay = async () => {
 connectToDb(() => {
   console.log("Successfully connected to Database");
   deductDay();
-  app.listen(port, () => {
+  app.listen(port, "localhost", () => {
     console.log(`listening on port ${port}`);
   });
 });
