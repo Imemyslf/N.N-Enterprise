@@ -8,7 +8,7 @@ import nodemailer from "nodemailer";
 import os from "os";
 import { ObjectId } from "mongodb";
 import dotenv from "dotenv";
-import api from "../api";
+import api from "./api/index.js";
 import downloadsFolder from "downloads-folder";
 
 const app = express();
