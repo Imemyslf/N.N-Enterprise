@@ -8,6 +8,7 @@ import nodemailer from "nodemailer";
 import os from "os";
 import { ObjectId } from "mongodb";
 import dotenv from "dotenv";
+import api from "../api";
 import downloadsFolder from "downloads-folder";
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(
   })
 );
 
+app.use(`/api/v1`, api);
 const dirPDF = path.join(path.join(os.homedir(), "Downloads"), "Invoice");
 
 if (!fs.existsSync(dirPDF)) {
