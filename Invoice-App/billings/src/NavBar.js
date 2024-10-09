@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import OM_Logo from "./assets/Images/OmLogo.png";
-import ContactUs from "./assets/Images/contact-mail.png";
-import Home from "./assets/Images/home.png";
-import AboutUS from "./assets/Images/profile-user.png";
+// import ContactUs from "./assets/Images/contact-mail.png";
+// import Home from "./assets/Images/home.png";
+// import AboutUS from "./assets/Images/profile-user.png";
 
 const NavBar = () => {
   const navigate = useNavigate();

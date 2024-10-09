@@ -12,7 +12,7 @@ export const AddMaterial = () => {
   const [materialRate, setMaterialRate] = useState("");
   const [materialKg, setMaterialKgs] = useState("");
   const [updateMaterial, setUpdatedMaterial] = useState(false);
-  const [validated, setValidated] = useState(false);
+  // const [validated, setValidated] = useState(false);
 
   // const handleSubmitt = (event) => {
   //   const form = event.currentTarget;
@@ -41,10 +41,7 @@ export const AddMaterial = () => {
         kg: materialKg,
       };
 
-      const result = await axios.post(
-        `/api/materials/insert`,
-        inputs
-      );
+      const result = await axios.post(`/api/materials/insert`, inputs);
 
       if (result.status === 201) {
         alert(`Materials added successfully`);
@@ -67,10 +64,7 @@ export const AddMaterial = () => {
         kg: materialKg,
       };
 
-      const updatedList = await axios.put(
-        `/api/materials/update`,
-        inputs
-      );
+      const updatedList = await axios.put(`/api/materials/update`, inputs);
 
       if (updatedList.status === 200) {
         alert("Material Updated Successfully");
@@ -85,7 +79,7 @@ export const AddMaterial = () => {
 
   return (
     <>
-      <Form className="form-container" noValidate validated={validated}>
+      <Form className="form-container">
         <h3 className="form-header">ADD NEW MATERIALS</h3>
         <Row className="mb-4">
           <Form.Group as={Col} controlId="formGridCompanyName">

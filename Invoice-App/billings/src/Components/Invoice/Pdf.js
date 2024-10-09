@@ -31,7 +31,7 @@ const downloadPDF = async (pdfRef, LastBill) => {
 
     // Generate the PDF Blob
     const blobFile = pdf.output("blob");
-    const blobUrl = URL.createObjectURL(blobFile);
+    // const blobUrl = URL.createObjectURL(blobFile);
 
     const formData = new FormData();
     formData.append("file", blobFile, `${LastBill.invoiceNos}`);

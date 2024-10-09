@@ -8,7 +8,6 @@ import nodemailer from "nodemailer";
 import os from "os";
 import { ObjectId } from "mongodb";
 import dotenv from "dotenv";
-import downloadsFolder from "downloads-folder";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -100,7 +99,8 @@ app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
 
 //Company List Name(GET)
 app.get(`/api/company`, async (req, res) => {
-  const company = await db.collection("company").find().toArray();
+  console.log(`inside company`);
+  const company = await db.collection("company").find({}).toArray();
   if (company.length > 0) {
     console.log(company);
     res.json(company);

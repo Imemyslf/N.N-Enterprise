@@ -13,7 +13,7 @@ export const ListMaterial = () => {
   const [updatedMaterialList, setUpdatedMaterialList] = useState([]);
   const [materialName, setMaterialName] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [selectedCompany, setSelectedMaterial] = useState(null);
+  const [selectedMaterial, setSelectedMaterial] = useState(null);
   const [sort, setSort] = useState(false);
 
   useEffect(() => {
@@ -59,6 +59,7 @@ export const ListMaterial = () => {
     setMaterialName("");
     setSuggestions([]);
     setMaterialList([material]);
+    console.log(selectedMaterial);
   };
 
   const handleSort = async (type) => {

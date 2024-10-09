@@ -18,6 +18,7 @@ export const ListCompany = () => {
     const fetchCompanies = async () => {
       try {
         const response = await axios.get(`/api/company`);
+        console.log("resposnse- ", response);
         if (response) {
           setCompanyList(response.data);
           setUpdatedCompanyList(response.data);
