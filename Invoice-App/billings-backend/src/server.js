@@ -541,7 +541,7 @@ app.post(`/api/billings/insert`, async (req, res) => {
 
   console.log(`\n\nFinal updatedMaterials:- `, updatedMaterials);
   const newInvoiceNos = await getNextInvoiceNos();
-  const daysLeft = 365;
+  const daysLeft = 31;
   const invoiceGenerated = false;
 
   const { _id, name, ...restOfCompanyInfo } = companyInfo;
@@ -706,9 +706,9 @@ const deductDay = async () => {
           (currentDate - old_date) / (1000 * 60 * 60 * 24)
         );
 
-        const dayLeft = 365 - timeDiff;
+        const dayLeft = 31 - timeDiff;
 
-        if (timeDiff <= 365) {
+        if (timeDiff <= 31) {
           await db
             .collection("billings")
             .updateOne(
