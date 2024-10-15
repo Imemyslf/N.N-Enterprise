@@ -1,26 +1,27 @@
 import { useState } from "react";
 
-function DataInput({ copmanyBill }) {
+function DataInput({ copmanyBill, sendExtraData }) {
   const [companyNameBill, setCompanynameBill] = useState("");
-  const [compnayDetails, setCompanyDetails] = useState({
-    invoiceNos: "",
-    vehicleNos: "",
-    orderNos: "",
-    dueDate: "",
-    date: "",
-  });
+  const [compnayDetails, setCompanyDetails] = useState({});
 
   console.log(`inside DataInput:- `, copmanyBill.companyName);
 
   const handleInputChange = (event) => {
+    if (Object.keys(compnayDetails).length === 0) {
+      setCompanyDetails({
+        vehicleNos: "",
+        orderNos: "",
+        dueDate: "",
+      });
+    }
     const { name, value } = event.target;
     setCompanyDetails((prevDetails) => ({
       ...prevDetails,
-      [name]: value, // dynamically update the property based on input name
+      [name]: value,
     }));
-  };
 
-  const company = `${copmanyBill.companyName}, ${copmanyBill.address}`;
+    sendExtraData(compnayDetails);
+  };
 
   return (
     <>
@@ -31,7 +32,11 @@ function DataInput({ copmanyBill }) {
               M/s
             </label>
           </div>
-          <div style={{ marginTop: "15px" }}>{company}</div>
+          <div style={{ marginTop: "15px" }}>
+            {copmanyBill.companyName}
+            <br />
+            {copmanyBill.address}
+          </div>
         </div>
         <div className="extra-input">
           <div className="labels1">
@@ -118,9 +123,7 @@ function DataInput({ copmanyBill }) {
                 type="text"
                 size={10}
                 name="date"
-                value={
-                  copmanyBill.date ? copmanyBill.date : compnayDetails.date
-                }
+                value={copmanyBill.date}
                 onChange={handleInputChange}
               />
             </div>

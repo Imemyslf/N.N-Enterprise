@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 
 export const Invoice = () => {
   let { invoice } = useParams();
+  const [extraInfo, setExtraInfo] = useState({});
 
   console.log(`invoice:- `, invoice);
   console.log(`invoice:- `, typeof invoice);
@@ -58,25 +59,25 @@ export const Invoice = () => {
 
   const handleDownloadPDF = async () => {
     try {
-      await downloadPDF(pdfRef, LastBill);
+      await downloadPDF(pdfRef, LastBill, extraInfo);
     } catch (err) {
       alert("Error downloading PDF:", err);
     }
   };
 
+  const setExtra = (details) => {
+    setExtraInfo(details);
+    console.log(`Inside Invoice:-`, extraInfo);
+  };
   return (
     <>
       <div className="pdf">
         <button onClick={handleDownloadPDF}>Download Pdf</button>
       </div>
-      {/* <div className="pdf">
-        <button onClick={handleDownloadPDF}>
-          <DownloadIcon />
-        </button>
-      </div> */}
+
       <div className="bill-container" ref={pdfRef}>
         <LogoInfo />
-        <DataInput copmanyBill={LastBill} />
+        <DataInput copmanyBill={LastBill} sendExtraData={setExtra} />
         <Main copmanyBill={LastBill} />
       </div>
     </>

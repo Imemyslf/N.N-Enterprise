@@ -76,7 +76,11 @@ export const BillList = () => {
                     <th>Rate/kg</th>
                     <th>Kg</th>
                     <th>Date & Time</th>
+                    <th>Days Left</th>
                     <th>Invoice Generated</th>
+                    <th>Vehicle Nos</th>
+                    <th>Order Nos</th>
+                    <th>Due Date</th>
                     <th>Delete</th>
                   </tr>
                 </thead>
@@ -174,6 +178,13 @@ export const BillList = () => {
                         {bill.time}
                       </td>
                       <td
+                        onClick={() =>
+                          navigate(`/billings/invoice/${bill.invoiceNos}`)
+                        }
+                      >
+                        {bill.daysLeft}
+                      </td>
+                      <td
                         className="checkmark"
                         onClick={() =>
                           navigate(`/billings/invoice/${bill.invoiceNos}`)
@@ -182,6 +193,27 @@ export const BillList = () => {
                         {bill.invoiceGenerated && (
                           <img src={checkmark} alt="right mark" />
                         )}
+                      </td>
+                      <td
+                        onClick={() =>
+                          navigate(`/billings/invoice/${bill.invoiceNos}`)
+                        }
+                      >
+                        {bill.vehicleNos}
+                      </td>
+                      <td
+                        onClick={() =>
+                          navigate(`/billings/invoice/${bill.invoiceNos}`)
+                        }
+                      >
+                        {bill.orderNos}
+                      </td>
+                      <td
+                        onClick={() =>
+                          navigate(`/billings/invoice/${bill.invoiceNos}`)
+                        }
+                      >
+                        {bill.dueDate}
                       </td>
                       <td className="delete-btn">
                         <div onClick={() => handleDeleteCompany(bill)}>

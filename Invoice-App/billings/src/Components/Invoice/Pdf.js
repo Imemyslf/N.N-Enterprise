@@ -2,7 +2,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import axios from "axios";
 
-const downloadPDF = async (pdfRef, LastBill) => {
+const downloadPDF = async (pdfRef, LastBill, extraInfo) => {
   const input = pdfRef.current;
   if (!input || !LastBill) {
     console.error("Missing input reference or LastBill data.");
@@ -36,14 +36,13 @@ const downloadPDF = async (pdfRef, LastBill) => {
     const formData = new FormData();
     formData.append("file", blobFile, `${LastBill.invoiceNos}`);
     formData.append("invoiceNos", LastBill.invoiceNos);
+    formData.append("ExtraInfo", JSON.stringify(extraInfo));
 
-    const response = await axios.post(
-      `http://localhost:8000/api/invoice/upload`,
-      formData,
-      {
-        headers: { "Content-type": "multipart/form-data" },
-      }
-    );
+    console.log(`Before sumbitting for data`, formData);
+
+    const response = await axios.post(`/api/invoice/upload`, formData, {
+      headers: { "Content-type": "multipart/form-data" },
+    });
 
     if (response.status === 200) {
       console.log("Pdf uploaded successfully");
@@ -52,12 +51,15 @@ const downloadPDF = async (pdfRef, LastBill) => {
         console.log("before mail:-", LastBill);
 
         const result = await axios.get(
-          `http://localhost:8000/api/sendMail?email=${LastBill.email}&invoice=${LastBill.invoiceNos}`
+          `/api/sendMail?email=${LastBill.email}&invoice=${LastBill.invoiceNos}`
         );
 
         if (result) {
           console.log("success", JSON.stringify(result));
           alert(`Mail sent successfully`);
+        } else {
+          console.log("error", JSON.stringify(result));
+          alert(`Server error`);
         }
       } catch (err) {
         console.log("error message:-", err);

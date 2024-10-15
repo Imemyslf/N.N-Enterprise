@@ -60,6 +60,31 @@ app.post(`/api/invoice/upload`, upload.single("file"), async (req, res) => {
     const invoiceNos = req.body.invoiceNos;
     console.log("Inovoice Nos", invoiceNos);
 
+    const extraInfo = JSON.parse(req.body.ExtraInfo);
+    console.log("Extra Info:- \n", extraInfo);
+
+    if (extraInfo) {
+      try {
+        const result = await db.collection("billings").updateOne(
+          { invoiceNos: invoiceNos },
+          {
+            $set: {
+              vehicleNos: extraInfo.vehicleNos,
+              orderNos: extraInfo.orderNos,
+              dueDate: extraInfo.dueDate,
+            },
+          }
+        );
+        if (result.modifiedCount > 0) {
+          console.log("Extra info updated successfully");
+        } else {
+          console.log("No matching invoice found or no changes made");
+        }
+      } catch (e) {
+        console.log("Error while updating extra info", e);
+      }
+    }
+
     const invoiceInfo = await db
       .collection("billings")
       .findOne({ invoiceNos: invoiceNos });
