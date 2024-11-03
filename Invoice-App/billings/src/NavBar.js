@@ -26,7 +26,7 @@ const NavBar = () => {
               navigate("/");
             }}
           >
-            Maya Traders
+            N.N. ENTERPRISE
           </h1>
           {/* <div id="nav-bar">
             <div
