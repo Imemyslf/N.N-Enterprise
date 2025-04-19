@@ -1,3 +1,15 @@
+import { db } from "../src/database.js";
+
+const getBillDetails = async (req, res) => {
+  const billings = await db.collection("billings").find({}).toArray();
+  if (billings.length > 0) {
+    // console.log(billings);
+    res.send(billings);
+  } else {
+    res.sendStatus(404);
+  }
+};
+
 const serachBillByInvoiceNos = async (req, res) => {
     let { invoiceNos } = req.params;
     console.log(`invoiceNos;- ${invoiceNos}`);
@@ -146,4 +158,4 @@ const deleteAllBill = async (req, res) => {
   }
 };
 
-export {serachBillByInvoiceNos, insertBill, paidBillAmount, deleteByInvoiceNos, deleteAllBill};
+export {getBillDetails, serachBillByInvoiceNos, insertBill, paidBillAmount, deleteByInvoiceNos, deleteAllBill};

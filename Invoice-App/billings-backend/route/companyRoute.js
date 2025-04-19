@@ -1,11 +1,12 @@
 import express from "express";
-import { searchCompany, companyInsert, deleteCompanyByName, deleteAllCompany, sortCompany, updateCompany } from "../controllers/companyController.js";
+import { getCompanyDetails, searchCompany, insertCompany, deleteCompanyByName, deleteAllCompany, sortCompany, updateCompany } from "../controllers/companyController.js";
 
 const router = express.Router();
 
+router.get("/",getCompanyDetails);
 router.get("/search/:name",searchCompany);
 router.get("/sort",sortCompany);
-router.post("/insert",companyInsert);
+router.post("/insert",insertCompany);
 router.put("/update",updateCompany);
 router.delete("/delete/:name",deleteCompanyByName);
 router.delete("/delete",deleteAllCompany);

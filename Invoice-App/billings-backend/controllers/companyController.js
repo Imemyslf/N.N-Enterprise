@@ -1,5 +1,18 @@
+import { db } from "../src/database.js";
 
-export const searchCompany =  async (req, res) => {
+const getCompanyDetails = async (req, res) => {
+  console.log(`inside company`);
+  const company = await db.collection("company").find({}).toArray();
+  if (company.length > 0) {
+    console.log(company);
+    res.json(company);
+  } else {
+    res.sendStatus(404);
+  }
+};
+
+
+const searchCompany =  async (req, res) => {
     let { name } = req.params;
     name = name.trim();
   
@@ -22,7 +35,7 @@ export const searchCompany =  async (req, res) => {
     }
   };
 
-export const companyInsert = async (req, res) => {
+const insertCompany = async (req, res) => {
     let { name, address, GSTNos, email, stateCode } = req.body;
     console.log(name, address, GSTNos, email, stateCode);
   
@@ -50,7 +63,7 @@ export const companyInsert = async (req, res) => {
     }
   };
 
-export const updateCompany = async (req, res) => {
+const updateCompany = async (req, res) => {
     let { _id, name, address, GSTNos, email, stateCode } = req.body;
     console.log(
       "Before Update:- \n",
@@ -96,7 +109,7 @@ export const updateCompany = async (req, res) => {
     }
   };
 
-export const deleteCompanyByName = async (req, res) => {
+const deleteCompanyByName = async (req, res) => {
     const { name } = req.params;
     console.log(`inside delete company:- `, name);
     try {
@@ -111,7 +124,7 @@ export const deleteCompanyByName = async (req, res) => {
     }
   };
 
-export const deleteAllCompany = async (req, res) => {
+const deleteAllCompany = async (req, res) => {
   try {
     const result = await db.collection("company").deleteMany({});
     if (result.deletedCount === 0) {
@@ -124,7 +137,7 @@ export const deleteAllCompany = async (req, res) => {
   }
 };
 
-export const sortCompany =  async (req, res) => {
+const sortCompany =  async (req, res) => {
   console.log(`inside sort`);
   const { methods, sorting } = req.query; // Using req.query for query parameters
   const sort = sorting === "asc" ? 1 : -1;
@@ -158,3 +171,5 @@ export const sortCompany =  async (req, res) => {
     console.log(err.message);
   }
 };
+
+export { getCompanyDetails, searchCompany, insertCompany, updateCompany, deleteCompanyByName, deleteAllCompany, sortCompany };

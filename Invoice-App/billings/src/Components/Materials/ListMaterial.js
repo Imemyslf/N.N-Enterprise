@@ -21,8 +21,14 @@ export const ListMaterial = () => {
       try {
         const response = await axios.get(`/api/materials`);
         if (response) {
-          setMaterialList(response.data);
-          setUpdatedMaterialList(response.data);
+          const normalizedData = response.data.map((item) => ({
+            ...item,
+            rate: item.rate?.$numberDecimal ?? item.rate,
+          }));
+          setMaterialList(normalizedData);
+          // setMaterialList(response.data);
+          // setUpdatedMaterialList(response.data);
+          setUpdatedMaterialList(normalizedData);
         }
       } catch (err) {
         console.error(err);

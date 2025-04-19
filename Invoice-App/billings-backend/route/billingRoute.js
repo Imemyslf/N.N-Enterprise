@@ -1,9 +1,9 @@
 import express from 'express';
-import {serachBillByInvoiceNos, insertBill ,deleteByInvoiceNos, deleteAllBill} from '../controllers/billingController.js';
-import { paidBillAmount } from '../controllers/billingController.js';
+import {getBillDetails, serachBillByInvoiceNos, insertBill ,deleteByInvoiceNos, deleteAllBill,paidBillAmount} from '../controllers/billingController.js';
 
 const router = express.Router();
 
+router.get("/", getBillDetails, );
 router.get("/insert",insertBill);
 router.get("/invoice/search/:invoiceNos",serachBillByInvoiceNos);
 router.put("/paid/:invoiceNos",paidBillAmount)
