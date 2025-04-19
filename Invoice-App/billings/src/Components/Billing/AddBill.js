@@ -90,7 +90,7 @@ export const AddBill = () => {
   const addMaterialInput = () => {
     setBillingDetails((prev) => ({
       ...prev,
-      companyMaterials: [...prev.companyMaterials, { name: "", kg: "" }],
+      companyMaterials: [...prev.companyMaterials, { name: "", kg: 0 }],
     }));
   };
 
