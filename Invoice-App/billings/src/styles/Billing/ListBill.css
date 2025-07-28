@@ -14,12 +14,15 @@
 
 /* Table Wrapper */
 .table-wrapper {
+  width: 100%;
   overflow: hidden;
   border-radius: 20px 20px 10px 10px;
 }
 
 .billing-table {
   width: 100%;
+  /* width: 100%; */
+  overflow-x: auto;
   border-collapse: collapse;
 }
 

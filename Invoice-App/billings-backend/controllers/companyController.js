@@ -1,4 +1,5 @@
 import { db } from "../src/database.js";
+import { ObjectId } from "mongodb";
 
 const getCompanyDetails = async (req, res) => {
   console.log(`inside company`);

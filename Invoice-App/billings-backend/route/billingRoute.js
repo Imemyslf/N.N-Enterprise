@@ -4,8 +4,8 @@ import {getBillDetails, serachBillByInvoiceNos, insertBill ,deleteByInvoiceNos, 
 const router = express.Router();
 
 router.get("/", getBillDetails, );
-router.get("/insert",insertBill);
 router.get("/invoice/search/:invoiceNos",serachBillByInvoiceNos);
+router.post("/insert",insertBill);
 router.put("/paid/:invoiceNos",paidBillAmount)
 router.delete("/delete/:invoiceNos",deleteByInvoiceNos);
 router.delete("/delete",deleteAllBill);

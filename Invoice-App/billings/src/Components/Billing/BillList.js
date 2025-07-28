@@ -12,11 +12,11 @@ export const BillList = () => {
   useEffect(() => {
     const showbills = async () => {
       try {
-        const repsonse = await axios.get(`/api/billings`);
-        const data = repsonse.data;
+        const response = await axios.get(`/api/billings`);
+        const data = response.data;
         console.log(data);
         if (data.length > 0) {
-          setBillInfo(repsonse.data);
+          setBillInfo(data);
         }
       } catch (e) {
         console.log(e);
@@ -42,17 +42,22 @@ export const BillList = () => {
       );
 
       if (result.status === 200) {
-        console.log(result.data);
         const updatedList = billInfo.filter(
           (bill) => bill.invoiceNos !== billNumber.invoiceNos
         );
-
         setBillInfo(updatedList);
-        console.log(`billinfo after deletion:`, billInfo);
       }
     } catch (err) {
       console.log("Error:- ", err.message);
     }
+  };
+
+  // Helper to handle Decimal128 and Number
+  const parseValue = (val) => {
+    if (val && typeof val === "object" && val.$numberDecimal) {
+      return parseFloat(val.$numberDecimal);
+    }
+    return val;
   };
 
   return (
@@ -86,135 +91,43 @@ export const BillList = () => {
                 </thead>
                 <tbody>
                   {billInfo.map((bill, index) => (
-                    <tr
-                      key={index}
-                      // onClick={() =>
-                      //   navigate(`/billings/invoice/${bill.invoiceNos}`)
-                      // }
-                    >
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {index + 1}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.invoiceNos}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.companyName}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.address}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.GSTNos}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.email}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.stateCode}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.companyMaterials.map((material, index) => (
-                          <p key={index}>{material.name}</p>
+                    <tr key={index}>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{index + 1}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.invoiceNos}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.companyName}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.address}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.GSTNos}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.email}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.stateCode}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>
+                        {bill.companyMaterials.map((material, i) => (
+                          <p key={i}>{material.name}</p>
                         ))}
                       </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.companyMaterials.map((material, index) => (
-                          <p key={index}>{material.rate}</p>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>
+                        {bill.companyMaterials.map((material, i) => (
+                          <p key={i}>{parseValue(material.rate)}</p>
                         ))}
                       </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.companyMaterials.map((material, index) => (
-                          <p key={index}>{material.kg}</p>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>
+                        {bill.companyMaterials.map((material, i) => (
+                          <p key={i}>{parseValue(material.kg)}</p>
                         ))}
                       </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>
                         {bill.date}
                         <br />
                         {bill.time}
                       </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.daysLeft}
-                      </td>
-                      <td
-                        className="checkmark"
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.daysLeft}</td>
+                      <td className="checkmark" onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>
                         {bill.invoiceGenerated && (
                           <img src={checkmark} alt="right mark" />
                         )}
                       </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.vehicleNos}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.orderNos}
-                      </td>
-                      <td
-                        onClick={() =>
-                          navigate(`/billings/invoice/${bill.invoiceNos}`)
-                        }
-                      >
-                        {bill.dueDate}
-                      </td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.vehicleNos}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.orderNos}</td>
+                      <td onClick={() => navigate(`/billings/invoice/${bill.invoiceNos}`)}>{bill.dueDate}</td>
                       <td className="delete-btn">
                         <div onClick={() => handleDeleteCompany(bill)}>
                           <DeleteIcon />

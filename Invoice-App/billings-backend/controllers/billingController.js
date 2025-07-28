@@ -1,4 +1,17 @@
 import { db } from "../src/database.js";
+import { Decimal128 } from "mongodb";
+
+const getNextInvoiceNos = async () => {
+  const result = await db
+    .collection("counters")
+    .findOneAndUpdate(
+      { _id: "invoiceNos" },
+      { $inc: { seq: 1 } },
+      { returnOriginal: false }
+    );
+
+  return result.seq;
+};
 
 const getBillDetails = async (req, res) => {
   const billings = await db.collection("billings").find({}).toArray();
@@ -49,7 +62,7 @@ const insertBill = async (req, res) => {
     for (let i = 0; i < companyMaterials.length; i++) {
       let { name, kg } = companyMaterials[i];
       name = name.trim();
-      kg = parseInt(kg, 10);
+      kg = Decimal128.fromString(parseFloat(kg.toString().trim()).toFixed(2));
   
       const material = await db
         .collection("materials")
@@ -60,7 +73,7 @@ const insertBill = async (req, res) => {
       }
   
       const { _id, ...restOfMaterials } = material;
-      updatedMaterials.push({ ...restOfMaterials, kg: kg });
+      updatedMaterials.push({ ...restOfMaterials, kg });
     }
   
     console.log(`\n\nFinal updatedMaterials:- `, updatedMaterials);
