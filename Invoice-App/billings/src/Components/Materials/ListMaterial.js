@@ -5,8 +5,6 @@ import "../../styles/Material/ListMaterial.css";
 import UpdateIcon from "@mui/icons-material/Update";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-// import { MaterialsList } from "../../Pages/Materials";
-
 export const ListMaterial = () => {
   const navigate = useNavigate();
   const [materialList, setMaterialList] = useState([]);
@@ -26,8 +24,6 @@ export const ListMaterial = () => {
             rate: item.rate?.$numberDecimal ?? item.rate,
           }));
           setMaterialList(normalizedData);
-          // setMaterialList(response.data);
-          // setUpdatedMaterialList(response.data);
           setUpdatedMaterialList(normalizedData);
         }
       } catch (err) {
